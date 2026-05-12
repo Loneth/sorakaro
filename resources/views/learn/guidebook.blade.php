@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <x-ui.breadcrumb :items="[
-            ['label' => 'Learn', 'url' => route('learn.index')],
-            ['label' => 'Guidebook']
+            ['label' => 'Belajar', 'url' => route('learn.index')],
+            ['label' => 'Buku Panduan']
         ]" />
     </x-slot>
 
@@ -14,8 +14,8 @@
                 @if($sections->isEmpty())
                     <x-ui.card>
                         <x-ui.empty-state
-                            title="No Guidebook Available"
-                            description="The guidebook for this level hasn't been created yet. Check back later!"
+                            title="Buku Panduan Belum Tersedia"
+                            description="Buku panduan untuk tingkat ini belum dibuat. Periksa kembali nanti!"
                         >
                             <x-slot:icon>
                                 <svg class="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,7 +24,7 @@
                             </x-slot:icon>
 
                             <x-ui.button variant="primary" :href="route('learn.level', $level)">
-                                View Lessons
+                                Lihat Pelajaran
                             </x-ui.button>
                         </x-ui.empty-state>
                     </x-ui.card>
@@ -64,7 +64,7 @@
                                                     <div class="min-w-0 flex-1">
                                                         <div class="mb-2">
                                                             @if($item->type === 'phrase')
-                                                                <x-ui.badge variant="info">💬 Phrase</x-ui.badge>
+                                                                <x-ui.badge variant="info">💬 Frasa</x-ui.badge>
                                                             @else
                                                                 <x-ui.badge class="bg-purple-100 text-purple-800">💡 Tip</x-ui.badge>
                                                             @endif
@@ -85,7 +85,7 @@
                                                         <button
                                                             type="button"
                                                             class="shrink-0 inline-flex items-center justify-center rounded-full border bg-white p-3 text-gray-700 hover:bg-gray-900 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
-                                                            title="Play audio"
+                                                            title="Putar suara"
                                                         >
                                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" />
@@ -97,7 +97,7 @@
                                         @endforeach
                                     </div>
                                 @else
-                                    <p class="text-sm text-gray-500 italic">No items in this section yet.</p>
+                                    <p class="text-sm text-gray-500 italic">Belum ada item di bagian ini.</p>
                                 @endif
                             </x-ui.card>
                         @endforeach

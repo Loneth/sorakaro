@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Result - {{ $lesson->title }}
+            Hasil - {{ $lesson->title }}
         </h2>
     </x-slot>
 
@@ -34,31 +34,31 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <x-ui.section-title :level="1" class="mb-2 text-green-700">Quiz Passed!</x-ui.section-title>
-                        <p class="text-gray-600">Great job passed this lesson!</p>
+                        <x-ui.section-title :level="1" class="mb-2 text-green-700">Lulus Kuis!</x-ui.section-title>
+                        <p class="text-gray-600">Kerja bagus, kamu lulus pelajaran ini!</p>
                     @else
                         <div class="mx-auto h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mb-4">
                             <svg class="h-12 w-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
-                        <x-ui.section-title :level="1" class="mb-2 text-red-700">Quiz Failed</x-ui.section-title>
-                        <p class="text-gray-600">Don't give up! Review the material and try again.</p>
+                        <x-ui.section-title :level="1" class="mb-2 text-red-700">Gagal Kuis</x-ui.section-title>
+                        <p class="text-gray-600">Jangan menyerah! Tinjau materi dan coba lagi.</p>
                     @endif
                 </div>
 
                 {{-- Score Display --}}
                 <div class="bg-gray-50 rounded-lg p-6 mb-6 border {{ $passed ? 'border-green-200 apple-success-bg' : 'border-red-200 apple-failure-bg' }}">
                     <div class="text-center">
-                        <div class="text-sm text-gray-600 mb-2">Your Score</div>
+                        <div class="text-sm text-gray-600 mb-2">Skor Kamu</div>
                         <div class="text-5xl font-bold {{ $passed ? 'text-green-600' : 'text-red-600' }} mb-2">
                             {{ $percentage }}%
                             <span class="text-xl text-gray-400 block mt-1 font-normal text-sm">
-                                ({{ $attempt->score }}/{{ $attempt->total_questions }} Correct)
+                                ({{ $attempt->score }}/{{ $attempt->total_questions }} Benar)
                             </span>
                         </div>
                         <div class="text-sm font-medium {{ $passed ? 'text-green-700' : 'text-red-700' }} mt-2">
-                            Required to Pass: {{ $passRate }}%
+                            Syarat Lulus: {{ $passRate }}%
                         </div>
                     </div>
                 </div>
@@ -66,17 +66,17 @@
                 {{-- Attempt Summary --}}
                 <div class="grid grid-cols-3 gap-4 mb-6 text-center">
                     <div class="bg-gray-50 rounded-lg p-4 border">
-                        <div class="text-xs text-gray-500">Questions</div>
+                        <div class="text-xs text-gray-500">Pertanyaan</div>
                         <div class="text-lg font-semibold text-gray-800">{{ $total }}</div>
                     </div>
 
                     <div class="bg-gray-50 rounded-lg p-4 border">
-                        <div class="text-xs text-gray-500">Correct</div>
+                        <div class="text-xs text-gray-500">Benar</div>
                         <div class="text-lg font-semibold text-green-700">{{ $score }}</div>
                     </div>
 
                     <div class="bg-gray-50 rounded-lg p-4 border">
-                        <div class="text-xs text-gray-500">Wrong</div>
+                        <div class="text-xs text-gray-500">Salah</div>
                         <div class="text-lg font-semibold text-red-700">{{ $total - $score }}</div>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                         <form method="POST" action="{{ route('learn.start', $lesson) }}" class="w-full sm:w-auto">
                             @csrf
                             <x-ui.button variant="primary" type="submit" class="w-full justify-center">
-                                Try Again
+                                Coba Lagi
                             </x-ui.button>
                         </form>
                     @endif
@@ -99,7 +99,7 @@
                         :href="route('learn.level', $lesson->level_id)"
                         class="w-full sm:w-auto justify-center"
                     >
-                        Back to {{ $lesson->level ? $lesson->level->name : 'Level' }}
+                        Kembali ke {{ $lesson->level ? $lesson->level->name : 'Tingkat' }}
                     </x-ui.button>
 
                     @if($passed)
@@ -108,7 +108,7 @@
                             :href="route('learn.index')"
                             class="w-full sm:w-auto justify-center"
                         >
-                            All Levels
+                            Semua Tingkat
                         </x-ui.button>
                     @endif
 

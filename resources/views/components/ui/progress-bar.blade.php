@@ -16,16 +16,16 @@
 <div class="mb-6">
     <div class="flex items-center justify-between mb-3 gap-3">
         <div class="text-sm font-medium text-gray-600">
-            Question {{ $current }} of {{ $total }}
+            Pertanyaan {{ $current }} dari {{ $total }}
         </div>
 
         <div class="text-sm font-medium text-gray-600 flex items-center gap-4 flex-wrap justify-end">
             @if(!is_null($score))
-                <span>Score: {{ $score }} / {{ $total }}</span>
+                <span>Skor: {{ $score }} / {{ $total }}</span>
             @endif
 
             @if(!is_null($answered))
-                <span>Answered: {{ $answered }} / {{ $total }}</span>
+                <span>Dijawab: {{ $answered }} / {{ $total }}</span>
             @endif
         </div>
     </div>

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lesson extends Model
 {
-    protected $fillable = ['level_id', 'title', 'order', 'pass_rate'];
+    protected $fillable = ['level_id', 'title', 'order', 'pass_rate', 'is_assessment'];
 
     public function level()
     {

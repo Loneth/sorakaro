@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <x-ui.breadcrumb :items="[
-            ['label' => 'Dashboard', 'url' => route('dashboard')],
-            ['label' => 'Attempts']
+            ['label' => 'Dasbor', 'url' => route('dashboard')],
+            ['label' => 'Percobaan']
         ]" />
     </x-slot>
 
@@ -10,14 +10,14 @@
         {{-- Page Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
             <div>
-                <h1 class="text-lg font-semibold text-gray-900">Attempt History</h1>
-                <p class="mt-1 text-sm text-gray-600">History of quizzes you have attempted.</p>
+                <h1 class="text-lg font-semibold text-gray-900">Riwayat Percobaan</h1>
+                <p class="mt-1 text-sm text-gray-600">Riwayat kuis yang telah Anda kerjakan.</p>
             </div>
 
             <div class="flex items-center gap-3">
                 @if(request()->anyFilled(['lesson_id', 'level_id', 'status']))
                     <a href="{{ route('attempts.index') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline">
-                        Clear filters
+                        Hapus filter
                     </a>
                 @endif
                 
@@ -34,7 +34,7 @@
 
                 <a href="{{ route('learn.index') }}"
                    class="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200">
-                    Go to Learn
+                    Pergi ke Belajar
                 </a>
             </div>
         </div>
@@ -45,11 +45,11 @@
                 <table class="w-full text-sm text-left text-gray-700">
                     <thead class="text-xs uppercase bg-gray-50 text-gray-600">
                         <tr>
-                            <th class="px-4 py-3">Lesson</th>
-                            <th class="px-4 py-3">Level</th>
-                            <th class="px-4 py-3">Score</th>
+                            <th class="px-4 py-3">Pelajaran</th>
+                            <th class="px-4 py-3">Tingkat</th>
+                            <th class="px-4 py-3">Skor</th>
                             <th class="px-4 py-3">Status</th>
-                            <th class="px-4 py-3">Date</th>
+                            <th class="px-4 py-3">Tanggal</th>
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -69,11 +69,11 @@
                                 <td class="px-4 py-3">
                                     @if((bool) ($attempt->passed ?? false))
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
-                                            Passed
+                                            Lulus
                                         </span>
                                     @else
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
-                                            Failed
+                                            Gagal
                                         </span>
                                     @endif
                                 </td>
@@ -83,16 +83,16 @@
                                 <td class="px-4 py-3 text-right">
                                     <a href="{{ route('learn.result', [$attempt->lesson_id, $attempt->id]) }}"
                                        class="text-sm font-semibold text-gray-900 hover:underline">
-                                        View result →
+                                        Lihat hasil →
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="px-4 py-10 text-center text-sm text-gray-600">
-                                    No attempts found.
+                                    Tidak ada percobaan yang ditemukan.
                                     <a href="{{ route('learn.index') }}" class="font-semibold text-gray-900 hover:underline">
-                                        Start learning
+                                        Mulai belajar
                                     </a>
                                 </td>
                             </tr>
@@ -117,7 +117,7 @@
                 <!-- Modal header -->
                 <div class="flex items-start justify-between p-4 border-b rounded-t">
                     <h3 class="text-xl font-semibold text-gray-900">
-                        Filter Attempts
+                        Saring Percobaan
                     </h3>
                     <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center" data-modal-hide="attempts-filter-modal">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -131,10 +131,10 @@
                     <div class="p-6 space-y-6">
                          {{-- Lesson Filter --}}
                         <div>
-                            <label for="lesson_id" class="block mb-2 text-sm font-medium text-gray-900">Lesson</label>
+                            <label for="lesson_id" class="block mb-2 text-sm font-medium text-gray-900">Pelajaran</label>
                             <select name="lesson_id" id="lesson_id"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                <option value="">All Lessons</option>
+                                <option value="">Semua Pelajaran</option>
                                 @foreach($lessonOptions as $lesson)
                                     <option value="{{ $lesson->id }}" {{ request('lesson_id') == $lesson->id ? 'selected' : '' }}>
                                         {{ $lesson->title }}
@@ -145,10 +145,10 @@
 
                         {{-- Level Filter --}}
                         <div>
-                            <label for="level_id" class="block mb-2 text-sm font-medium text-gray-900">Level</label>
+                            <label for="level_id" class="block mb-2 text-sm font-medium text-gray-900">Tingkat</label>
                             <select name="level_id" id="level_id"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                <option value="">All Levels</option>
+                                <option value="">Semua Tingkat</option>
                                 @foreach($levelOptions as $level)
                                     <option value="{{ $level->id }}" {{ request('level_id') == $level->id ? 'selected' : '' }}>
                                         {{ $level->name }}
@@ -162,15 +162,15 @@
                             <label for="status" class="block mb-2 text-sm font-medium text-gray-900">Status</label>
                             <select name="status" id="status"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                <option value="">All Status</option>
-                                <option value="passed" {{ request('status') === 'passed' ? 'selected' : '' }}>Passed</option>
-                                <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
+                                <option value="">Semua Status</option>
+                                <option value="passed" {{ request('status') === 'passed' ? 'selected' : '' }}>Lulus</option>
+                                <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Gagal</option>
                             </select>
                         </div>
                     </div>
                     <!-- Modal footer -->
                     <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
-                        <button type="submit" class="text-white bg-gray-900 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Apply Filters</button>
+                        <button type="submit" class="text-white bg-gray-900 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Terapkan Filter</button>
                         <a href="{{ route('attempts.index') }}" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Reset</a>
                     </div>
                 </form>

@@ -22,11 +22,11 @@
             <div class="mt-2 grid grid-cols-2 gap-6 max-w-xs">
                 <label class="inline-flex items-center">
                     <input type="radio" name="gender" value="male" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" {{ old('gender') === 'male' ? 'checked' : '' }} required>
-                    <span class="ml-2 text-gray-700">Male</span>
+                    <span class="ml-2 text-gray-700">Laki-laki</span>
                 </label>
                 <label class="inline-flex items-center">
                     <input type="radio" name="gender" value="female" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" {{ old('gender') === 'female' ? 'checked' : '' }} required>
-                    <span class="ml-2 text-gray-700">Female</span>
+                    <span class="ml-2 text-gray-700">Perempuan</span>
                 </label>
             </div>
             <x-input-error :messages="$errors->get('gender')" class="mt-2" />

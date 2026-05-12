@@ -27,7 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
 
             // ✅ CUSTOM
-            'level.unlocked' => \App\Http\Middleware\EnsureLevelUnlocked::class,
+            'level.unlocked'  => \App\Http\Middleware\EnsureLevelUnlocked::class,
+            'learning.step'   => \App\Http\Middleware\EnsureLearningStep::class,
         ]);
     })
 

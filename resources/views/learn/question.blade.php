@@ -94,7 +94,7 @@
                         {{-- BACK BUTTON --}}
                         @if ($prevUrl)
                             <x-ui.button variant="ghost" :href="$prevUrl">
-                                &larr; Previous
+                                &larr; Sebelumnya
                             </x-ui.button>
                         @else
                             <div></div> {{-- Spacer --}}
@@ -103,12 +103,12 @@
                         {{-- ACTION BUTTON --}}
                         @if (isset($userAnswer))
                             <x-ui.button variant="primary" :href="$nextUrl">
-                                {{ str_contains($nextUrl, 'result') ? 'Finish Quiz' : 'Next Question' }}
+                                {{ str_contains($nextUrl, 'result') ? 'Selesai Kuis' : 'Pertanyaan Berikutnya' }}
                                 &rarr;
                             </x-ui.button>
                         @else
                             <x-ui.button variant="primary" type="submit">
-                                Check Answer
+                                Periksa Jawaban
                             </x-ui.button>
                         @endif
                     </div>
