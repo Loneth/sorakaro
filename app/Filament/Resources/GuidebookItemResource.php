@@ -53,10 +53,14 @@ class GuidebookItemResource extends Resource
                 ->columnSpanFull()
                 ->placeholder('Halo, apa kabar?'),
 
-            Forms\Components\TextInput::make('audio_path')
-                ->label('Audio Path (Future)')
-                ->maxLength(255)
-                ->placeholder('/audio/hello.mp3'),
+            Forms\Components\FileUpload::make('audio_path')
+                ->label('Audio Pronunciation')
+                ->disk('public')
+                ->directory('guidebook-audio')
+                ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'audio/ogg'])
+                ->maxSize(10240)
+                ->helperText('Upload MP3/WAV/OGG (max 10 MB). Users will hear this when clicking the play button.')
+                ->columnSpanFull(),
 
             Forms\Components\TextInput::make('order')
                 ->label('Display Order')

@@ -47,32 +47,11 @@
 
             <div class="space-y-6">
                 @foreach($questions as $index => $question)
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition hover:shadow-md"
-                         id="question-{{ $question->id }}">
-
-                        {{-- Question number & prompt --}}
-                        <div class="flex gap-3 mb-4">
-                            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center">
-                                {{ $index + 1 }}
-                            </span>
-                            <p class="text-gray-800 font-medium leading-relaxed">{{ $question->prompt }}</p>
-                        </div>
-
-                        {{-- Choices --}}
-                        <div class="space-y-2 pl-10">
-                            @foreach($question->choices as $choice)
-                                <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer
-                                              hover:border-blue-400 hover:bg-blue-50 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
-                                    <input type="radio"
-                                           name="answers[{{ $question->id }}]"
-                                           value="{{ $choice->id }}"
-                                           class="text-blue-600 focus:ring-blue-400"
-                                           required>
-                                    <span class="text-gray-700 text-sm">{{ $choice->text }}</span>
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
+                    @include('learning._question-card', [
+                        'question' => $question,
+                        'index'    => $index,
+                        'formName' => 'pretest-form',
+                    ])
                 @endforeach
             </div>
 
@@ -89,4 +68,7 @@
             </div>
         </form>
     </div>
+
+    {{-- Alpine.js audio player component --}}
 </x-app-layout>
+

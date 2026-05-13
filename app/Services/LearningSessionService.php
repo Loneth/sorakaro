@@ -153,6 +153,13 @@ class LearningSessionService
 
     /**
      * Strictly validates answers to prevent tampering, then saves them.
+     *
+     * Supports two answer modes:
+     *   MCQ     → $answers[$questionId] = $choiceId  (integer/string)
+     *   Writing → $answers[$questionId] = $textAnswer (string, not an integer choice id)
+     *
+     * The distinction is made by checking Question::isWritingType() and whether
+     * the submitted value matches any existing choice ID (guards against spoofing).
      */
     private function validateAndSaveAnswers(Attempt $attempt, array $answers): void
     {
@@ -165,9 +172,7 @@ class LearningSessionService
             ->get()
             ->keyBy('id');
 
-        $validAnswersData = [];
-
-        foreach ($answers as $questionId => $choiceId) {
+        foreach ($answers as $questionId => $submittedValue) {
             $question = $questions->get($questionId);
 
             if (! $question) {
@@ -175,33 +180,40 @@ class LearningSessionService
                 continue;
             }
 
-            $choice = $question->choices->firstWhere('id', $choiceId);
+            // ── Writing / Typing question ────────────────────────────────────
+            if ($question->isWritingType()) {
+                $textAnswer = (string) $submittedValue;
+                $isCorrect  = $question->isCorrectTextAnswer($textAnswer);
+
+                AttemptAnswer::updateOrCreate(
+                    ['attempt_id' => $attempt->id, 'question_id' => $questionId],
+                    [
+                        'choice_id'   => null,
+                        'text_answer' => $textAnswer,
+                        'is_correct'  => $isCorrect,
+                    ]
+                );
+                continue;
+            }
+
+            // ── MCQ question ─────────────────────────────────────────────────
+            $choiceId = $submittedValue;
+            $choice   = $question->choices->firstWhere('id', $choiceId);
 
             if (! $choice) {
                 Log::warning("Attempt {$attempt->id}: Choice {$choiceId} does not belong to question {$questionId}");
                 continue;
             }
 
-            $validAnswersData[] = [
-                'attempt_id'  => $attempt->id,
-                'question_id' => $questionId,
-                'choice_id'   => $choiceId,
-                'is_correct'  => $choice->is_correct,
-            ];
-        }
-
-        // Upsert all valid answers safely
-        foreach ($validAnswersData as $data) {
             AttemptAnswer::updateOrCreate(
+                ['attempt_id' => $attempt->id, 'question_id' => $questionId],
                 [
-                    'attempt_id'  => $data['attempt_id'],
-                    'question_id' => $data['question_id'],
-                ],
-                [
-                    'choice_id'  => $data['choice_id'],
-                    'is_correct' => $data['is_correct'],
+                    'choice_id'   => $choiceId,
+                    'text_answer' => null,
+                    'is_correct'  => $choice->is_correct,
                 ]
             );
         }
     }
 }
+

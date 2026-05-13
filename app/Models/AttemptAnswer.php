@@ -9,7 +9,8 @@ class AttemptAnswer extends Model
     protected $fillable = [
         'attempt_id',
         'question_id',
-        'choice_id',
+        'choice_id',    // null for writing questions
+        'text_answer',  // null for MCQ questions
         'is_correct',
     ];
 

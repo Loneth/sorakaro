@@ -81,16 +81,31 @@
                                                         @endif
                                                     </div>
 
-                                                    @if($item->audio_path)
-                                                        <button
-                                                            type="button"
-                                                            class="shrink-0 inline-flex items-center justify-center rounded-full border bg-white p-3 text-gray-700 hover:bg-gray-900 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
-                                                            title="Putar suara"
-                                                        >
-                                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" />
-                                                            </svg>
-                                                        </button>
+                                                     @if($item->audio_path)
+                                                        <div x-data="audioPlayer('{{ Storage::disk('public')->url($item->audio_path) }}')"
+                                                             x-init="init()">
+                                                            <button type="button"
+                                                                    @click="toggle()"
+                                                                    :title="playing ? 'Jeda audio' : 'Putar audio'"
+                                                                    class="group shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border
+                                                                           text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400
+                                                                           bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600">
+                                                                {{-- Play icon --}}
+                                                                <svg x-show="!playing && !loading" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                                                    <path d="M8 5v14l11-7z"/>
+                                                                </svg>
+                                                                {{-- Pause icon --}}
+                                                                <svg x-show="playing && !loading" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style="display:none">
+                                                                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                                                </svg>
+                                                                {{-- Spinner --}}
+                                                                <svg x-show="loading" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24" style="display:none">
+                                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                                                                </svg>
+                                                                <span x-text="playing ? 'Jeda' : '🔊 Dengar'"></span>
+                                                            </button>
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -107,4 +122,34 @@
             </div>
         </x-ui.container>
     </div>
+
+    @push('scripts')
+    <script>
+    function audioPlayer(src) {
+        return {
+            audio: null,
+            playing: false,
+            loading: false,
+
+            init() {
+                this.audio = new Audio(src);
+                this.audio.preload = 'none';
+                this.audio.addEventListener('loadstart', () => this.loading = true);
+                this.audio.addEventListener('canplay',   () => this.loading = false);
+                this.audio.addEventListener('ended',     () => this.playing = false);
+            },
+
+            toggle() {
+                if (this.playing) {
+                    this.audio.pause();
+                    this.playing = false;
+                } else {
+                    this.audio.play().then(() => { this.playing = true; }).catch(() => {});
+                }
+            },
+        };
+    }
+    </script>
+    @endpush
 </x-app-layout>
+

@@ -68,17 +68,61 @@
                             <ul class="divide-y divide-gray-50">
                                 @foreach($section->items as $item)
                                     <li class="px-6 py-4">
-                                        @if($item->title)
-                                            <h3 class="font-medium text-gray-800 text-sm mb-1">{{ $item->title }}</h3>
-                                        @endif
-                                        @if($item->content)
-                                            <p class="text-gray-600 text-sm leading-relaxed">{!! nl2br(e($item->content)) !!}</p>
-                                        @endif
-                                        @if($item->example)
-                                            <div class="mt-2 bg-blue-50 border-l-4 border-blue-400 px-4 py-2 rounded-r-lg text-sm text-blue-800 italic">
-                                                {{ $item->example }}
+                                        <div class="flex items-start justify-between gap-4">
+                                            {{-- Main content --}}
+                                            <div class="flex-1 min-w-0">
+                                                {{-- Badge type --}}
+                                                <div class="mb-2">
+                                                    @if($item->type === 'phrase')
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">💬 Frasa</span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">💡 Tip</span>
+                                                    @endif
+                                                </div>
+
+                                                {{-- Main text (Karo language) --}}
+                                                <div class="text-base font-semibold text-gray-900">
+                                                    {{ $item->text }}
+                                                </div>
+
+                                                {{-- Translation --}}
+                                                @if($item->translation)
+                                                    <div class="mt-1 text-sm text-gray-500 italic">
+                                                        {{ $item->translation }}
+                                                    </div>
+                                                @endif
                                             </div>
-                                        @endif
+
+                                            {{-- Audio player button --}}
+                                            @if($item->audio_path)
+                                                <div class="flex-shrink-0"
+                                                     x-data="audioPlayer('{{ Storage::disk('public')->url($item->audio_path) }}')"
+                                                     x-init="init()">
+                                                    <button type="button"
+                                                            @click="toggle()"
+                                                            :title="playing ? 'Jeda audio' : 'Putar audio'"
+                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition
+                                                                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400
+                                                                   bg-white text-indigo-600 border-indigo-200
+                                                                   hover:bg-indigo-600 hover:text-white hover:border-indigo-600">
+                                                        {{-- Play icon --}}
+                                                        <svg x-show="!playing && !loading" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M8 5v14l11-7z"/>
+                                                        </svg>
+                                                        {{-- Pause icon --}}
+                                                        <svg x-show="playing && !loading" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style="display:none">
+                                                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                                        </svg>
+                                                        {{-- Spinner --}}
+                                                        <svg x-show="loading" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24" style="display:none">
+                                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                                                        </svg>
+                                                        <span x-text="playing ? 'Jeda' : '🔊 Dengar'"></span>
+                                                    </button>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </li>
                                 @endforeach
                             </ul>
@@ -103,4 +147,6 @@
             </form>
         </div>
     </div>
+
 </x-app-layout>
+
