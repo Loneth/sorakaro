@@ -81,7 +81,7 @@
                                 <form method="POST" action="{{ route('learn.start', $lesson) }}">
                                     @csrf
                                     <x-ui.button variant="primary" type="submit">
-                                        {{ $lesson->status === 'in_progress' ? 'Mulai Ulang' : 'Mulai Pelajaran' }}
+                                        {{ $lesson->status === 'in_progress' ? 'Mulai Ulang' : 'Mulai Kuis' }}
                                     </x-ui.button>
                                 </form>
                             </div>

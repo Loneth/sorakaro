@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attempt;
+use App\Models\Level;
 use App\Models\Lesson;
 use App\Models\LearningSession;
 use Illuminate\Http\Request;
@@ -192,21 +193,73 @@ class DashboardController extends Controller
                 ->first();
         }
 
-        // 11. Learning Session — for guided flow hero CTA & continue card
-        $learningSession = LearningSession::where('user_id', $userId)
+        // 11. Active LearningSession (any non-completed)
+        $activeSession = LearningSession::where('user_id', $userId)
+            ->whereNotIn('status', ['completed'])
+            ->with('level')
             ->latest()
             ->first();
 
-        // Compute hero CTA state:
-        // 'none'      → no session ever
-        // 'active'    → session in progress
-        // 'completed' → last session completed
-        $heroCTAState = 'none';
-        if ($learningSession) {
-            $heroCTAState = ($learningSession->status === 'completed') ? 'completed' : 'active';
-        }
+        // 12. Hero CTA state
+        // 'none'      → no active session, pick a level
+        // 'active'    → session in progress for a specific level
+        $heroCTAState = $activeSession ? 'active' : 'none';
 
-        // 12. Return View
+        // 13. Level cards with unlock + completion state
+        $user       = $request->user();
+        $user->load('progress');
+        $allLevels  = Level::orderBy('order')->get();
+
+        $levelCards = $allLevels->map(function (Level $level) use ($user, $userId, $activeSession) {
+            $isUnlocked = $user->hasUnlockedLevel($level);
+
+            // Count non-assessment lessons in this level
+            $totalLessons = $level->lessons()->where('is_assessment', false)->count();
+
+            // Count lessons the user has passed at least once
+            $passedLessons = 0;
+            if ($isUnlocked && $totalLessons > 0) {
+                $passedLessons = (int) DB::table('attempts')
+                    ->join('lessons', 'attempts.lesson_id', '=', 'lessons.id')
+                    ->where('attempts.user_id', $userId)
+                    ->where('lessons.level_id', $level->id)
+                    ->where('lessons.is_assessment', false)
+                    ->where('attempts.passed', true)
+                    ->whereNotNull('attempts.finished_at')
+                    ->distinct('attempts.lesson_id')
+                    ->count('attempts.lesson_id');
+            }
+
+            $progressPct = $totalLessons > 0
+                ? (int) round(($passedLessons / $totalLessons) * 100)
+                : 0;
+
+            $isCompleted = $isUnlocked && $progressPct >= 100;
+
+            // Does the active session belong to this level?
+            $hasActiveSession = $activeSession && (int) $activeSession->level_id === (int) $level->id;
+
+            // Completed learning sessions for this level
+            $completedSession = LearningSession::where('user_id', $userId)
+                ->where('level_id', $level->id)
+                ->where('status', 'completed')
+                ->latest()
+                ->first();
+
+            return [
+                'level'            => $level,
+                'is_unlocked'      => $isUnlocked,
+                'is_completed'     => $isCompleted,
+                'has_active_session' => $hasActiveSession,
+                'active_session'   => $hasActiveSession ? $activeSession : null,
+                'completed_session' => $completedSession,
+                'total_lessons'    => $totalLessons,
+                'passed_lessons'   => $passedLessons,
+                'progress_pct'     => $progressPct,
+            ];
+        });
+
+        // 14. Return View
         return view('dashboard', compact(
             'totalAttempts',
             'avgScore',
@@ -221,8 +274,9 @@ class DashboardController extends Controller
             'dailyStreak',
             'lessonsCompleted',
             'nextLesson',
-            'learningSession',
-            'heroCTAState'
+            'activeSession',
+            'heroCTAState',
+            'levelCards'
         ));
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Attempt;
 use App\Models\LearningSession;
 use App\Services\LearningSessionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class LearningController extends Controller
 {
@@ -20,12 +21,44 @@ class LearningController extends Controller
 
     // ─── 1. Start ─────────────────────────────────────────────────────────────
 
+    /**
+     * Generic resume: if there is an active session, continue it.
+     * If not, send the user back to the dashboard to choose a level.
+     */
     public function start(Request $request)
     {
-        $session = $this->sessionService->getOrCreateActiveSession($request->user());
+        $session = LearningSession::where('user_id', $request->user()->id)
+            ->whereNotIn('status', ['completed'])
+            ->latest()
+            ->first();
+
+        if (! $session) {
+            return redirect()->route('dashboard')
+                ->with('info', 'Pilih level yang ingin kamu pelajari.');
+        }
 
         $route = $session->resolveLearningRoute();
-        \Illuminate\Support\Facades\Log::info('Learning route: ' . $route);
+        Log::info("Resuming learning session {$session->id}, route: {$route}");
+
+        return redirect()->route($route);
+    }
+
+    /**
+     * Level-specific entry: start or resume the guided flow for a chosen level.
+     * This is the primary entry point triggered by the level cards on the dashboard.
+     */
+    public function startLevel(Request $request, Level $level)
+    {
+        // Guard: level must be unlocked for this user
+        if (! $request->user()->hasUnlockedLevel($level)) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Level ini belum terbuka. Selesaikan level sebelumnya terlebih dahulu.');
+        }
+
+        $session = $this->sessionService->getOrCreateSessionForLevel($request->user(), $level);
+
+        $route = $session->resolveLearningRoute();
+        Log::info("Starting level {$level->id} for user {$request->user()->id}, route: {$route}");
 
         return redirect()->route($route);
     }
@@ -42,18 +75,18 @@ class LearningController extends Controller
 
         // Create an attempt if one doesn't exist yet
         if (! $session->pretest_attempt_id) {
-            $lesson = Lesson::where('is_assessment', true)->withCount('questions')->inRandomOrder()->first();
-            
-            if (! $lesson || $lesson->questions_count == 0) {
-                return redirect()->route('dashboard')->with('error', 'Tidak ada materi tersedia untuk pre-test.');
+            $lesson = $this->resolveAssessmentLesson($session->level_id, 'pretest');
+
+            if (! $lesson) {
+                return redirect()->route('dashboard')->with('error', 'Tidak ada soal pretest tersedia untuk level ini. Hubungi admin.');
             }
 
             $totalQuestions = min(10, $lesson->questions_count);
 
             $attempt = Attempt::create([
-                'user_id' => $request->user()->id,
-                'lesson_id' => $lesson->id,
-                'score' => 0,
+                'user_id'         => $request->user()->id,
+                'lesson_id'       => $lesson->id,
+                'score'           => 0,
                 'total_questions' => $totalQuestions,
             ]);
 
@@ -88,7 +121,7 @@ class LearningController extends Controller
         $levelName = $session->fresh()->getLevelName();
 
         return redirect()->route('learning.guidebook')
-            ->with('success', "Level terdeteksi: {$levelName}. Sekarang baca panduan materi! 🚀");
+            ->with('success', 'Tes pemahaman awal selesai! Sekarang pelajari materinya. 📖');
     }
 
     // ─── 3. Guidebook ────────────────────────────────────────────────────────
@@ -140,18 +173,18 @@ class LearningController extends Controller
         }
 
         if (! $session->posttest_attempt_id) {
-            $lesson = Lesson::where('is_assessment', true)->withCount('questions')->inRandomOrder()->first();
-            
-            if (! $lesson || $lesson->questions_count == 0) {
-                return redirect()->route('dashboard')->with('error', 'Tidak ada materi tersedia untuk post-test.');
+            $lesson = $this->resolveAssessmentLesson($session->level_id, 'posttest');
+
+            if (! $lesson) {
+                return redirect()->route('dashboard')->with('error', 'Tidak ada soal posttest tersedia untuk level ini. Hubungi admin.');
             }
 
             $totalQuestions = min(10, $lesson->questions_count);
 
             $attempt = Attempt::create([
-                'user_id' => $request->user()->id,
-                'lesson_id' => $lesson->id,
-                'score' => 0,
+                'user_id'         => $request->user()->id,
+                'lesson_id'       => $lesson->id,
+                'score'           => 0,
                 'total_questions' => $totalQuestions,
             ]);
 
@@ -213,5 +246,47 @@ class LearningController extends Controller
             ->whereNotIn('status', ['completed'])
             ->latest()
             ->first();
+    }
+
+    /**
+     * Resolve the assessment lesson for a given level and type (pretest|posttest).
+     *
+     * Priority:
+     *   1. Lesson with assessment_type = $type AND level_id = $levelId
+     *   2. Lesson with is_assessment = true AND level_id = $levelId (legacy fallback)
+     *   3. null — caller must handle missing lesson gracefully
+     *
+     * NOTE: No global fallback. Assessment MUST be contextual to the level.
+     */
+    private function resolveAssessmentLesson(int $levelId, string $type): ?\App\Models\Lesson
+    {
+        // Primary: new contextual assessment_type field
+        $lesson = Lesson::where('level_id', $levelId)
+            ->where('assessment_type', $type)
+            ->withCount('questions')
+            ->first();
+
+        // Legacy fallback: old boolean is_assessment (only for backward compat)
+        if (! $lesson) {
+            $lesson = Lesson::where('level_id', $levelId)
+                ->where('is_assessment', true)
+                ->withCount('questions')
+                ->first();
+
+            if ($lesson) {
+                Log::warning(
+                    "Level {$levelId}: Using legacy is_assessment lesson #{$lesson->id} as {$type}. " .
+                    "Please set assessment_type='{$type}' on this lesson in the admin panel."
+                );
+            }
+        }
+
+        // Reject if lesson has no questions
+        if ($lesson && $lesson->questions_count === 0) {
+            Log::error("Level {$levelId}: Assessment lesson #{$lesson->id} ({$type}) has 0 questions.");
+            return null;
+        }
+
+        return $lesson;
     }
 }

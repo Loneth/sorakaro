@@ -20,7 +20,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ─── NEW: Guided Learning Flow ────────────────────────────────────────────
+    // Entry point: resume active session (redirects to dashboard if none)
     Route::get('/learning/start', [LearningController::class, 'start'])->name('learning.start');
+
+    // Level-specific entry point: start/resume guided flow for a chosen level
+    Route::get('/learning/start/{level}', [LearningController::class, 'startLevel'])->name('learning.start.level');
 
     Route::middleware('learning.step')->group(function () {
         Route::get('/learning/pretest',    [LearningController::class, 'pretest'])->name('learning.pretest');

@@ -46,8 +46,8 @@
                             </div>
                             
                             @if ($isUnlocked)
-                                <x-ui.button variant="primary" :href="route('learn.level', $level)">
-                                    Mulai Kuis
+                                <x-ui.button variant="primary" :href="route('learning.start.level', $level->id)">
+                                    Pilih
                                 </x-ui.button>
                             @else
                                 <x-ui.button variant="disabled" disabled>

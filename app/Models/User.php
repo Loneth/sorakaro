@@ -73,23 +73,50 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Check if a level is unlocked for this user.
-     * Source of truth: user_progress.highest_unlocked_level_id
+     * New architecture: Unlocked if user has a completed LearningSession
+     * for the *previous* level (based on order).
+     * Fallback to legacy user_progress logic.
      */
-
     public function hasUnlockedLevel(Level $level): bool
     {
+        // 1. The first level is always unlocked
+        $firstLevel = Level::orderBy('order')->first();
+        if (!$firstLevel || (int) $level->id === (int) $firstLevel->id) {
+            return true;
+        }
+
+        // 2. Determine what the "previous" level is
+        $previousLevel = Level::where('order', '<', $level->order)
+            ->orderByDesc('order')
+            ->first();
+
+        // 3. Check guided learning flow completion
+        if ($previousLevel) {
+            // Unlocked if they completed the previous level (or any higher level)
+            $hasGuidedCompletion = \App\Models\LearningSession::where('user_id', $this->id)
+                ->where('status', 'completed')
+                ->whereHas('level', function($query) use ($previousLevel) {
+                    $query->where('order', '>=', $previousLevel->order);
+                })
+                ->exists();
+
+            if ($hasGuidedCompletion) {
+                return true;
+            }
+        }
+
+        // 4. Legacy fallback (UserProgress)
         $highestId = \App\Models\UserProgress::where('user_id', $this->id)
             ->value('highest_unlocked_level_id');
 
-        // If no progress yet: only the first level is unlocked
-        if (!$highestId) {
-            $firstLevelId = Level::orderBy('order')->value('id');
-            return $firstLevelId ? ((int) $level->id === (int) $firstLevelId) : ($level->order === 1);
+        if ($highestId) {
+            $highestOrder = Level::where('id', $highestId)->value('order') ?? 1;
+            if ((int) $level->order <= (int) $highestOrder) {
+                return true;
+            }
         }
 
-        $highestOrder = Level::where('id', $highestId)->value('order') ?? 1;
-
-        return (int) $level->order <= (int) $highestOrder;
+        return false;
     }
 
     /**
@@ -97,15 +124,24 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getHighestUnlockedOrder(): int
     {
-        $progress = $this->progress;
+        // Get the highest order from completed guided sessions
+        $highestGuidedOrder = Level::whereHas('learningSessions', function ($query) {
+            $query->where('user_id', $this->id)
+                  ->where('status', 'completed');
+        })->max('order');
 
-        if (!$progress || !$progress->highest_unlocked_level_id) {
-            return 1;
+        // The user is unlocked up to (highest completed order + 1)
+        // If they completed order 1, they have unlocked order 2.
+        $guidedUnlockOrder = $highestGuidedOrder ? ($highestGuidedOrder + 1) : 1;
+
+        // Legacy check
+        $legacyHighestOrder = 1;
+        $progress = $this->progress;
+        if ($progress && $progress->highest_unlocked_level_id) {
+            $legacyHighestOrder = Level::where('id', $progress->highest_unlocked_level_id)->value('order') ?? 1;
         }
 
-        $highestUnlocked = Level::find($progress->highest_unlocked_level_id);
-
-        return $highestUnlocked?->order ?? 1;
+        return max((int) $guidedUnlockOrder, (int) $legacyHighestOrder);
     }
 
     public function canAccessPanel(Panel $panel): bool

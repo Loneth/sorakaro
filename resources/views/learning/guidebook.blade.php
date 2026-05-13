@@ -28,7 +28,7 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="text-blue-200 text-xs font-bold tracking-wider uppercase mb-1">Step 2: Learn</div>
+                    <div class="text-blue-200 text-xs font-bold tracking-wider uppercase mb-1">Langkah 2 dari 4</div>
                     <h1 class="text-xl font-bold">Buku Panduan</h1>
                     <p class="text-blue-100 text-sm">
                         {{ $level?->name ?? 'Materi Pembelajaran' }}

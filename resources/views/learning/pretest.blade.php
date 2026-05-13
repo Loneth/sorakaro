@@ -22,9 +22,9 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="text-blue-200 text-xs font-bold tracking-wider uppercase mb-1">Step 1: Find your level</div>
-                    <h1 class="text-xl font-bold">Pre-test</h1>
-                    <p class="text-blue-100 text-sm">Ukur kemampuan awal kamu sebelum belajar</p>
+                    <div class="text-blue-200 text-xs font-bold tracking-wider uppercase mb-1">Langkah 1 dari 4</div>
+                    <h1 class="text-xl font-bold">Tes Pemahaman Awal</h1>
+                    <p class="text-blue-100 text-sm">Ukur pemahamanmu tentang Bahasa Karo sebelum mulai belajar</p>
                 </div>
             </div>
             <div class="mt-3 flex items-center gap-2 text-sm text-blue-100">
@@ -32,7 +32,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <span>Jawab semua soal untuk menentukan level kamu.</span>
+                <span>Jawab semua soal untuk mengukur pemahaman awalmu.</span>
             </div>
         </div>
 
@@ -81,7 +81,7 @@
                 <button type="submit"
                         class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold
                                px-8 py-3 rounded-xl shadow transition active:scale-95">
-                    Selesai & Lihat Level Saya
+                    Selesai & Lanjut ke Panduan
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>

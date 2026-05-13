@@ -10,9 +10,11 @@ use Filament\Tables\Table;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 
 class LessonResource extends Resource
 {
@@ -52,6 +54,16 @@ class LessonResource extends Resource
                 ->minValue(0)
                 ->maxValue(100)
                 ->required(),
+
+            Select::make('assessment_type')
+                ->label('Assessment Type')
+                ->helperText('Biarkan kosong untuk lesson biasa. Pilih Pretest/Posttest untuk assessment tertentu.')
+                ->options([
+                    'pretest'  => '🔍 Pretest',
+                    'posttest' => '✅ Posttest',
+                ])
+                ->nullable()
+                ->placeholder('— Normal Lesson —'),
         ]);
     }
 
@@ -75,9 +87,32 @@ class LessonResource extends Resource
                     ->formatStateUsing(fn (string $state): string => "{$state}%")
                     ->sortable(),
 
+                TextColumn::make('assessment_type')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'pretest'  => 'warning',
+                        'posttest' => 'success',
+                        default    => 'gray',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'pretest'  => '🔍 Pretest',
+                        'posttest' => '✅ Posttest',
+                        default    => '📖 Normal',
+                    }),
+
                 TextColumn::make('order')
                     ->label('Order')
                     ->sortable(),
+            ])
+            ->filters([
+                SelectFilter::make('assessment_type')
+                    ->label('Filter by Type')
+                    ->options([
+                        'pretest'  => '🔍 Pretest',
+                        'posttest' => '✅ Posttest',
+                    ])
+                    ->placeholder('All Types'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

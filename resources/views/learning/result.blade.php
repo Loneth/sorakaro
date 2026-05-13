@@ -105,9 +105,9 @@
                     </div>
                 </div>
 
-                {{-- Level badge --}}
+                {{-- Level context badge --}}
                 <div class="mt-6 flex items-center justify-center gap-2">
-                    <span class="text-sm text-gray-500">Level kamu:</span>
+                    <span class="text-sm text-gray-500">Materi yang dipelajari:</span>
                     <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-100 text-blue-800 font-bold text-sm">
                         {{ $level }}
                     </span>
