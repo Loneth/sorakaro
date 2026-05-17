@@ -73,8 +73,7 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Check if a level is unlocked for this user.
-     * New architecture: Unlocked if user has a completed LearningSession
-     * for the *previous* level (based on order).
+     * New architecture: Unlocked if user has passed the POSTTEST of the *previous* level.
      * Fallback to legacy user_progress logic.
      */
     public function hasUnlockedLevel(Level $level): bool
@@ -90,17 +89,10 @@ class User extends Authenticatable implements FilamentUser
             ->orderByDesc('order')
             ->first();
 
-        // 3. Check guided learning flow completion
+        // 3. Check guided learning flow completion using single source of truth
         if ($previousLevel) {
-            // Unlocked if they completed the previous level (or any higher level)
-            $hasGuidedCompletion = \App\Models\LearningSession::where('user_id', $this->id)
-                ->where('status', 'completed')
-                ->whereHas('level', function($query) use ($previousLevel) {
-                    $query->where('order', '>=', $previousLevel->order);
-                })
-                ->exists();
-
-            if ($hasGuidedCompletion) {
+            $unlockService = app(\App\Services\LevelUnlockService::class);
+            if ($unlockService->hasCompletedLevel($this, $previousLevel)) {
                 return true;
             }
         }
@@ -124,15 +116,18 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getHighestUnlockedOrder(): int
     {
-        // Get the highest order from completed guided sessions
-        $highestGuidedOrder = Level::whereHas('learningSessions', function ($query) {
-            $query->where('user_id', $this->id)
-                  ->where('status', 'completed');
-        })->max('order');
+        // Get the highest order from passed posttest attempts
+        $highestCompletedOrder = \Illuminate\Support\Facades\DB::table('attempts')
+            ->join('lessons', 'attempts.lesson_id', '=', 'lessons.id')
+            ->join('levels', 'lessons.level_id', '=', 'levels.id')
+            ->where('attempts.user_id', $this->id)
+            ->where('lessons.assessment_type', 'posttest')
+            ->whereNotNull('attempts.finished_at')
+            ->where('attempts.passed', true)
+            ->max('levels.order');
 
         // The user is unlocked up to (highest completed order + 1)
-        // If they completed order 1, they have unlocked order 2.
-        $guidedUnlockOrder = $highestGuidedOrder ? ($highestGuidedOrder + 1) : 1;
+        $guidedUnlockOrder = $highestCompletedOrder ? ($highestCompletedOrder + 1) : 1;
 
         // Legacy check
         $legacyHighestOrder = 1;

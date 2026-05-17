@@ -13,10 +13,6 @@
     <div class="max-w-2xl mx-auto py-8 px-4">
 
         @php
-            $improvement  = $session->improvement;
-            $isImproved   = $improvement > 0;
-            $isSame       = $improvement === 0;
-            
             $pretest = $session->pretestAttempt;
             $preScore = ($pretest && $pretest->total_questions > 0)
                 ? (int) round(($pretest->score / $pretest->total_questions) * 100)
@@ -27,47 +23,36 @@
                 ? (int) round(($posttest->score / $posttest->total_questions) * 100)
                 : 0;
                 
+            $isPassed = $posttest && $posttest->passed;
+            $passRate = $posttest && $posttest->lesson ? $posttest->lesson->pass_rate : 70;
+                
             $level = $session->level ? $session->level->name : 'A1';
         @endphp
 
         {{-- Hero result card --}}
         <div class="rounded-2xl shadow-xl overflow-hidden mb-8">
             {{-- Top gradient banner --}}
-            <div class="bg-gradient-to-r from-blue-600 to-blue-400 px-8 py-8 text-white text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 mb-4">
-                    @if($isImproved)
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
-                    @elseif($isSame)
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"/>
-                        </svg>
+            <div class="{{ $isPassed ? 'bg-gradient-to-r from-green-600 to-green-400' : 'bg-gradient-to-r from-blue-600 to-blue-400' }} px-8 pt-10 pb-8 text-white text-center">
+                <div class="flex justify-center mb-6">
+                    @if($isPassed)
+                        <img src="{{ asset('images/result/success.png') }}" alt="Success" class="h-48 md:h-56 w-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500">
                     @else
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
-                        </svg>
+                        <img src="{{ asset('images/result/fail.png') }}" alt="Keep Trying" class="h-48 md:h-56 w-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500">
                     @endif
                 </div>
 
-                <h1 class="text-2xl font-bold mb-1">
-                    @if($isImproved)
-                        Kamu Meningkat! 🚀
-                    @elseif($isSame)
-                        Skor Sama 💪
+                <h1 class="text-2xl md:text-3xl font-bold mb-2">
+                    @if($isPassed)
+                        Selamat! Kamu berhasil menyelesaikan level ini 🎉
                     @else
-                        Tetap Semangat! ✨
+                        Belum berhasil kali ini 🚀
                     @endif
                 </h1>
-                <p class="text-blue-100 text-sm">
-                    @if($isImproved)
-                        Kerja bagus — kamu sudah berkembang {{ $improvement }} poin!
-                    @elseif($isSame)
-                        Skor kamu konsisten. Coba lagi untuk meningkat!
+                <p class="{{ $isPassed ? 'text-green-50' : 'text-blue-50' }} text-sm md:text-base max-w-sm mx-auto">
+                    @if($isPassed)
+                        Luar biasa! Kamu telah menguasai materi ini dengan sangat baik.
                     @else
-                        Jangan menyerah. Setiap percobaan adalah proses belajar.
+                        Belajar bahasa memang butuh proses. Yuk coba pelajari materinya lagi!
                     @endif
                 </p>
             </div>
@@ -75,30 +60,23 @@
             {{-- Score comparison --}}
             <div class="bg-white px-8 py-6">
                 <div class="grid grid-cols-3 gap-4 items-center">
-
                     {{-- Pre-test --}}
                     <div class="text-center">
                         <div class="text-3xl font-bold text-gray-800">{{ $preScore }}%</div>
                         <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Pre-test</div>
                     </div>
 
-                    {{-- Arrow + improvement --}}
+                    {{-- Arrow --}}
                     <div class="flex flex-col items-center">
-                        <div class="text-2xl font-bold
-                            {{ $isImproved ? 'text-green-500' : ($isSame ? 'text-gray-400' : 'text-red-400') }}">
-                            {{ $isImproved ? '+' : '' }}{{ $improvement }}%
-                        </div>
-                        <svg class="w-6 h-6 mt-1
-                            {{ $isImproved ? 'text-green-400' : ($isSame ? 'text-gray-300' : 'text-red-300') }}"
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="text-sm font-bold text-gray-400 mb-1">Target: {{ $passRate }}%</div>
+                        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
                     </div>
 
                     {{-- Post-test --}}
                     <div class="text-center">
-                        <div class="text-3xl font-bold
-                            {{ $isImproved ? 'text-blue-600' : ($isSame ? 'text-gray-800' : 'text-gray-800') }}">
+                        <div class="text-3xl font-bold {{ $isPassed ? 'text-green-600' : 'text-blue-600' }}">
                             {{ $postScore }}%
                         </div>
                         <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Post-test</div>
@@ -108,7 +86,7 @@
                 {{-- Level context badge --}}
                 <div class="mt-6 flex items-center justify-center gap-2">
                     <span class="text-sm text-gray-500">Materi yang dipelajari:</span>
-                    <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-100 text-blue-800 font-bold text-sm">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full {{ $isPassed ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }} font-bold text-sm">
                         {{ $level }}
                     </span>
                 </div>
@@ -144,26 +122,32 @@
 
         {{-- CTAs --}}
         <div class="flex flex-col sm:flex-row gap-3">
-            <a href="{{ route('learning.start') }}"
-               id="retry-assessment-btn"
-               class="flex-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50
-                      border border-gray-200 text-gray-700 font-semibold px-6 py-3 rounded-xl shadow-sm transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                </svg>
-                Ulangi Assessment
-            </a>
+            @if($isPassed)
+                <a href="{{ route('dashboard') }}"
+                   class="flex-1 inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700
+                          text-white font-semibold px-6 py-3 rounded-xl shadow transition active:scale-95">
+                    Lanjut ke Level Berikutnya
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </a>
+            @else
+                <a href="{{ route('learning.start') }}"
+                   class="flex-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50
+                          border border-gray-200 text-gray-700 font-semibold px-6 py-3 rounded-xl shadow-sm transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Ulangi Belajar
+                </a>
 
-            <a href="{{ route('dashboard') }}"
-               id="continue-learning-btn"
-               class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700
-                      text-white font-semibold px-6 py-3 rounded-xl shadow transition active:scale-95">
-                Lanjutkan Belajar
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                </svg>
-            </a>
+                <a href="{{ route('dashboard') }}"
+                   class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700
+                          text-white font-semibold px-6 py-3 rounded-xl shadow transition active:scale-95">
+                    Kembali ke Dasbor
+                </a>
+            @endif
         </div>
 
 

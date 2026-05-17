@@ -121,15 +121,18 @@ class LearningSessionService
                 ->where('is_correct', true)
                 ->count();
                 
-            $attempt->update([
-                'score' => $score,
-                'passed' => true,
-                'finished_at' => now(),
-            ]);
-
             $posttestScore = $attempt->total_questions > 0 
                 ? (int) round(($score / $attempt->total_questions) * 100) 
                 : 0;
+
+            $passRate = $attempt->lesson->pass_rate ?? 70;
+            $isPassed = $posttestScore >= $passRate;
+
+            $attempt->update([
+                'score'       => $score,
+                'passed'      => $isPassed,
+                'finished_at' => now(),
+            ]);
 
             // Calculate pretest percentage for improvement comparison safely
             $pretest = $session->pretestAttempt;
@@ -140,14 +143,20 @@ class LearningSessionService
             // Safe division formula
             $improvement = ($pretestScore > 0)
                 ? (int) round((($posttestScore - $pretestScore) / $pretestScore) * 100)
-                : $posttestScore; // If they scored 0 previously, their improvement is just their current score percentage.
+                : $posttestScore;
 
             $session->update([
                 'status'      => 'completed',
                 'improvement' => $improvement,
             ]);
 
-            Log::info("User {$user->id} completed posttest. Improvement: {$improvement}%");
+            // Only unlock next level if passed
+            if ($isPassed) {
+                $unlockService = app(\App\Services\LevelUnlockService::class);
+                $unlockService->checkAndUnlockNextLevel($user, $attempt->lesson);
+            }
+
+            Log::info("User {$user->id} completed posttest. Passed: " . ($isPassed ? 'Yes' : 'No') . ". Improvement: {$improvement}%");
         });
     }
 

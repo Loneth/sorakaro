@@ -14,9 +14,7 @@
             </button>
 
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
-                    <span class="text-white text-sm font-bold">S</span>
-                </div>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Sorakaro" class="h-12 w-auto object-contain">
                 <span class="font-bold text-gray-900">Sorakaro</span>
             </a>
 
@@ -60,9 +58,7 @@
                 {{-- Brand --}}
                 <div class="px-5 py-6">
                     <a href="{{ route('dashboard') }}" class="hidden sm:flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
-                            <span class="text-white text-lg font-bold">S</span>
-                        </div>
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Sorakaro" class="h-16 w-auto object-contain">
                         <span class="font-bold text-white text-lg tracking-tight">Sorakaro</span>
                     </a>
                 </div>

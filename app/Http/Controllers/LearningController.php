@@ -260,26 +260,10 @@ class LearningController extends Controller
      */
     private function resolveAssessmentLesson(int $levelId, string $type): ?\App\Models\Lesson
     {
-        // Primary: new contextual assessment_type field
         $lesson = Lesson::where('level_id', $levelId)
             ->where('assessment_type', $type)
             ->withCount('questions')
             ->first();
-
-        // Legacy fallback: old boolean is_assessment (only for backward compat)
-        if (! $lesson) {
-            $lesson = Lesson::where('level_id', $levelId)
-                ->where('is_assessment', true)
-                ->withCount('questions')
-                ->first();
-
-            if ($lesson) {
-                Log::warning(
-                    "Level {$levelId}: Using legacy is_assessment lesson #{$lesson->id} as {$type}. " .
-                    "Please set assessment_type='{$type}' on this lesson in the admin panel."
-                );
-            }
-        }
 
         // Reject if lesson has no questions
         if ($lesson && $lesson->questions_count === 0) {

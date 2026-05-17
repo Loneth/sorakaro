@@ -27,7 +27,6 @@ class LearnController extends Controller
     public function showLevel(Level $level)
     {
         $lessons = $level->lessons()
-            ->where('is_assessment', false)
             ->withCount('questions')
             ->orderBy('order')
             ->get();

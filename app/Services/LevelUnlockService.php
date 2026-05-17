@@ -39,30 +39,17 @@ class LevelUnlockService
         $this->unlockLevel($user, $nextLevel);
     }
 
-    /**
-     * Check if user has completed all lessons in a level
-     */
     public function hasCompletedLevel(User $user, Level $level): bool
     {
-        // Get total lessons in this level
-        $totalLessons = $level->lessons()->count();
-        
-        if ($totalLessons === 0) {
-            // Level has no lessons, consider it completed
-            return true;
-        }
-
-        // Get distinct completed lesson IDs for this user in this level
-        $completedLessons = DB::table('attempts')
+        // Level is considered completed only if its posttest is passed
+        return DB::table('attempts')
             ->join('lessons', 'attempts.lesson_id', '=', 'lessons.id')
             ->where('attempts.user_id', $user->id)
             ->where('lessons.level_id', $level->id)
+            ->where('lessons.assessment_type', 'posttest')
             ->whereNotNull('attempts.finished_at')
             ->where('attempts.passed', true)
-            ->distinct('attempts.lesson_id')
-            ->count('attempts.lesson_id');
-
-        return $completedLessons >= $totalLessons;
+            ->exists();
     }
 
     /**

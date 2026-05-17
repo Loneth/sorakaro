@@ -8,7 +8,7 @@
         <div class="flex flex-wrap items-center justify-between py-3">
             {{-- Brand --}}
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                <x-application-logo class="h-9 w-auto fill-current text-gray-800" />
+                <x-application-logo class="h-16 w-auto object-contain" />
                 <span class="self-center text-base font-semibold whitespace-nowrap text-gray-900">
                     Sorakaro
                 </span>

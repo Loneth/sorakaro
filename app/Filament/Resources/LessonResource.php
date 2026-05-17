@@ -57,20 +57,31 @@ class LessonResource extends Resource
 
             Select::make('assessment_type')
                 ->label('Assessment Type')
-                ->helperText('Biarkan kosong untuk lesson biasa. Pilih Pretest/Posttest untuk assessment tertentu.')
                 ->options([
-                    'pretest'  => '🔍 Pretest',
+                    'pretest'  => '📝 Pretest',
                     'posttest' => '✅ Posttest',
                 ])
-                ->nullable()
-                ->placeholder('— Normal Lesson —'),
+                ->required()
+                ->rules([
+                    fn (\Filament\Forms\Get $get, ?\App\Models\Lesson $record) => function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                        $exists = \App\Models\Lesson::where('level_id', $get('level_id'))
+                            ->where('assessment_type', $value)
+                            ->when($record, fn ($query) => $query->where('id', '!=', $record->id))
+                            ->exists();
+
+                        if ($exists) {
+                            $type = $value === 'pretest' ? 'Pretest' : 'Posttest';
+                            $fail("Level ini sudah memiliki {$type}.");
+                        }
+                    },
+                ]),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('order')
+            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->orderBy('level_id')->orderByDesc('assessment_type'))
             ->columns([
                 TextColumn::make('level.name')
                     ->label('Level')
@@ -96,9 +107,9 @@ class LessonResource extends Resource
                         default    => 'gray',
                     })
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'pretest'  => '🔍 Pretest',
+                        'pretest'  => '📝 Pretest',
                         'posttest' => '✅ Posttest',
-                        default    => '📖 Normal',
+                        default    => '-',
                     }),
 
                 TextColumn::make('order')
@@ -109,7 +120,7 @@ class LessonResource extends Resource
                 SelectFilter::make('assessment_type')
                     ->label('Filter by Type')
                     ->options([
-                        'pretest'  => '🔍 Pretest',
+                        'pretest'  => '📝 Pretest',
                         'posttest' => '✅ Posttest',
                     ])
                     ->placeholder('All Types'),

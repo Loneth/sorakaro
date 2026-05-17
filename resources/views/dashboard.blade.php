@@ -11,35 +11,37 @@
 
             <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-bold mb-1">
-                        Halo, {{ explode(' ', Auth::user()->name)[0] }} 👋
+                    <h1 class="flex items-center gap-4 text-2xl lg:text-3xl font-bold mb-1">
+                       <img src="{{ asset('images/welcome.png') }}" alt="Welcome" class="h-20 md:h-24 w-auto drop-shadow-md">
+                       <span>Selamat Datang, Menjuah-Juah {{ explode(' ', Auth::user()->name)[0] }}</span>
                     </h1>
                     <p class="text-blue-100 text-sm">
-                        @if($lessonsCompleted > 0)
-                            Kamu sudah menyelesaikan {{ $lessonsCompleted }} pelajaran. Terus semangat! 🚀
+                        @if($levelsCompleted > 0)
+                            Kamu sudah menyelesaikan {{ $levelsCompleted }} dari {{ $totalLevels }} level. Terus semangat! 🚀
                         @else
                             Mulai perjalanan belajar Bahasa Karo kamu sekarang!
                         @endif
                     </p>
-                    @if($passRate > 0)
                         <div class="mt-4 max-w-xs">
                             <div class="flex justify-between text-xs text-blue-200 mb-1">
-                                <span>Tingkat kelulusan</span>
-                                <span>{{ $passRate }}%</span>
+                                <span>Perjalanan Belajar</span>
+                                <span>{{ $overallProgress }}%</span>
                             </div>
                             <div class="w-full bg-white/20 rounded-full h-2">
                                 <div class="h-2 rounded-full bg-white transition-all duration-700"
-                                     style="width: {{ max(2, min(100, $passRate)) }}%"></div>
+                                     style="width: {{ max(0, min(100, $overallProgress)) }}%"></div>
                             </div>
                         </div>
-                    @endif
                 </div>
 
-                <a href="{{ route('learn.index') }}"
-                   class="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-blue-700 font-bold rounded-xl shadow-lg hover:scale-[1.04] transition-all duration-200 self-start lg:self-center">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    Mulai Belajar
-                </a>
+                <div class="flex flex-col items-start lg:items-center">
+                    <a href="{{ $smartCTA['route'] }}"
+                       class="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-blue-700 font-bold rounded-xl shadow-lg hover:scale-[1.04] transition-all duration-200">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        {{ $smartCTA['label'] }}
+                    </a>
+                    <p class="text-blue-100 text-[11px] mt-2 font-medium opacity-80">{{ $smartCTA['subtext'] }}</p>
+                </div>
             </div>
         </div>
 
@@ -55,23 +57,36 @@
                 </div>
             </div>
 
-            <div class="dash-card p-5 flex items-center gap-4">
-                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
-                </div>
-                <div>
-                    <div class="text-2xl font-bold text-gray-900">{{ $dailyStreak ?? 0 }}</div>
-                    <div class="text-xs text-gray-500 font-medium">Rekor Hari</div>
+            <div class="dash-card p-5 flex items-center justify-between col-span-1 sm:col-span-1 lg:col-span-2">
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="text-lg font-bold text-gray-900">🔥 {{ $dailyStreak ?? 0 }} Hari Beruntun</div>
+                        </div>
+                        <div class="text-[10px] text-gray-400 font-medium uppercase tracking-wider hidden sm:block">Pertahankan streak kamu!</div>
+                    </div>
+                    <div class="flex justify-between items-center w-full max-w-sm">
+                        @foreach($streakHistory as $day)
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="text-[10px] font-medium {{ $day['active'] ? 'text-blue-600' : 'text-gray-400' }}">{{ $day['day'] }}</span>
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 rounded flex items-center justify-center {{ $day['active'] ? 'bg-blue-500 shadow-sm shadow-blue-200' : 'bg-gray-100' }}">
+                                    @if($day['active'])
+                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 
-            <div class="dash-card p-5 flex items-center gap-4">
+            <div class="dash-card p-5 flex items-center gap-4 hidden lg:flex">
                 <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
-                    <div class="text-2xl font-bold text-gray-900">{{ $lessonsCompleted ?? 0 }}</div>
-                    <div class="text-xs text-gray-500 font-medium">Pelajaran Selesai</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ $levelsCompleted ?? 0 }} <span class="text-sm text-gray-400 font-medium">/ {{ $totalLevels ?? 0 }}</span></div>
+                    <div class="text-xs text-gray-500 font-medium">Level Selesai</div>
                 </div>
             </div>
         </div>
@@ -98,8 +113,6 @@
                                     $unlocked  = $card['is_unlocked'];
                                     $completed = $card['is_completed'];
                                     $pct       = $card['progress_pct'];
-                                    $passed    = $card['passed_lessons'];
-                                    $total     = $card['total_lessons'];
                                 @endphp
 
                                 <div class="flex items-center gap-4">
@@ -125,12 +138,12 @@
                                                 <span class="text-xs font-bold text-green-600">✅ Selesai</span>
                                             @elseif(!$unlocked)
                                                 <span class="text-xs text-gray-400">🔒 Terkunci</span>
-                                            @elseif($total > 0)
-                                                <span class="text-xs text-gray-500">{{ $passed }}/{{ $total }}</span>
+                                            @else
+                                                <span class="text-xs text-blue-500 font-bold">Terbuka</span>
                                             @endif
                                         </div>
 
-                                        @if($unlocked && !$completed && $total > 0)
+                                        @if($unlocked && !$completed)
                                             <div class="w-full bg-gray-100 rounded-full h-2">
                                                 <div class="h-2 rounded-full bg-blue-500 transition-all duration-700"
                                                      style="width: {{ $pct }}%"></div>
@@ -158,7 +171,7 @@
                         </a>
                     </div>
 
-                    @if(empty($recentAttempts) || count($recentAttempts) === 0)
+                    @if(empty($recentActivities) || count($recentActivities) === 0)
                         <div class="text-center py-6">
                             <p class="text-sm text-gray-400 mb-3">Belum ada aktivitas belajar.</p>
                             <a href="{{ route('learn.index') }}"
@@ -168,28 +181,23 @@
                         </div>
                     @else
                         <div class="divide-y divide-gray-50">
-                            @foreach($recentAttempts as $a)
+                            @foreach($recentActivities as $a)
                                 <div class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-                                    <div class="flex-shrink-0">
-                                        @if(($a['passed'] ?? false))
-                                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                                <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                            </div>
-                                        @else
-                                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                                                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/></svg>
-                                            </div>
-                                        @endif
+                                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-sm">
+                                        {{ $a['icon'] }}
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <div class="text-sm font-semibold text-gray-900 truncate">{{ $a['lesson'] ?? '-' }}</div>
-                                        <div class="text-xs text-gray-400">{{ $a['date'] ?? '-' }}</div>
+                                        <div class="text-sm font-semibold text-gray-900 truncate">{{ $a['title'] }}</div>
+                                        <div class="text-xs text-gray-400">{{ $a['time_ago'] }}</div>
                                     </div>
                                     <div class="flex items-center gap-2 flex-shrink-0">
-                                        <span class="text-sm font-bold text-gray-700">{{ $a['score'] ?? 0 }}%</span>
-                                        <span class="text-xs font-semibold {{ ($a['passed'] ?? false) ? 'text-blue-600' : 'text-gray-400' }}">
-                                            {{ ($a['passed'] ?? false) ? 'Lulus' : 'Coba Lagi' }}
-                                        </span>
+                                        @if($a['type'] === 'pretest' || $a['type'] === 'guidebook')
+                                            <span class="text-xs font-semibold text-gray-400">Selesai</span>
+                                        @elseif($a['type'] === 'posttest_passed')
+                                            <span class="text-xs font-semibold text-blue-600">Lulus</span>
+                                        @else
+                                            <span class="text-xs font-semibold text-gray-400">Coba Lagi</span>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -201,35 +209,7 @@
             {{-- Right Column (2/5) --}}
             <div class="lg:col-span-2 space-y-6">
 
-                {{-- Performance --}}
-                <div class="dash-card p-6">
-                    <h2 class="text-base font-bold text-gray-900 mb-5">Performa</h2>
-                    <div class="space-y-5">
-                        <div>
-                            <div class="flex justify-between text-sm mb-1.5">
-                                <span class="text-gray-500">Akurasi</span>
-                                <span class="font-bold text-gray-900">{{ $avgScore ?? 0 }}%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="h-2 rounded-full bg-blue-500 transition-all duration-700"
-                                     style="width: {{ max(0, min(100, $avgScore ?? 0)) }}%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-sm mb-1.5">
-                                <span class="text-gray-500">Tingkat Kelulusan</span>
-                                <span class="font-bold text-gray-900">{{ $passRate ?? 0 }}%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="h-2 rounded-full bg-blue-400 transition-all duration-700"
-                                     style="width: {{ max(0, min(100, $passRate ?? 0)) }}%"></div>
-                            </div>
-                        </div>
-                        <div class="pt-2 border-t border-gray-50">
-                            <div class="text-xs text-gray-400">{{ $totalAttempts ?? 0 }} total percobaan</div>
-                        </div>
-                    </div>
-                </div>
+
 
                 {{-- Leaderboard --}}
                 <div class="dash-card p-6">
@@ -274,27 +254,7 @@
                     @endif
                 </div>
 
-                {{-- Topic Mastery --}}
-                @if(!empty($categoryPerformance) && count($categoryPerformance) > 0)
-                    <div class="dash-card p-6">
-                        <h2 class="text-base font-bold text-gray-900 mb-4">Penguasaan Materi</h2>
-                        <div class="space-y-3.5">
-                            @foreach($categoryPerformance as $c)
-                                @php($pct = (int) ($c['percent'] ?? 0))
-                                <div>
-                                    <div class="flex justify-between text-sm mb-1">
-                                        <span class="text-gray-600 truncate mr-2">{{ $c['name'] ?? 'Materi' }}</span>
-                                        <span class="font-bold text-gray-700">{{ $pct }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                        <div class="h-1.5 rounded-full bg-blue-500 transition-all duration-500"
-                                             style="width: {{ max(0, min(100, $pct)) }}%"></div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
+
             </div>
         </div>
 
