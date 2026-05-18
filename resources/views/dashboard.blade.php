@@ -12,7 +12,7 @@
             <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
                     <h1 class="flex items-center gap-4 text-2xl lg:text-3xl font-bold mb-1">
-                       <img src="{{ asset('images/welcome.png') }}" alt="Welcome" class="h-20 md:h-24 w-auto drop-shadow-md">
+                       <img src="{{ Auth::user()->gender === 'female' ? asset('images/female.png') : asset('images/male.png') }}" alt="User Avatar" class="h-20 md:h-24 w-auto drop-shadow-md">
                        <span>Selamat Datang, Menjuah-Juah {{ explode(' ', Auth::user()->name)[0] }}</span>
                     </h1>
                     <p class="text-blue-100 text-sm">
@@ -34,34 +34,42 @@
                         </div>
                 </div>
 
-                <div class="flex flex-col items-start lg:items-center">
-                    <a href="{{ $smartCTA['route'] }}"
-                       class="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-blue-700 font-bold rounded-xl shadow-lg hover:scale-[1.04] transition-all duration-200">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        {{ $smartCTA['label'] }}
-                    </a>
-                    <p class="text-blue-100 text-[11px] mt-2 font-medium opacity-80">{{ $smartCTA['subtext'] }}</p>
+                <div class="flex flex-col items-start lg:items-center gap-3">
+                    <img src="{{ asset('images/welcome.png') }}" alt="Welcome" class="hidden sm:block h-24 lg:h-32 w-auto drop-shadow-lg object-contain">
+                    <div class="flex flex-col items-start lg:items-center">
+                        <a href="{{ $smartCTA['route'] }}"
+                           class="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-blue-700 font-bold rounded-xl shadow-lg hover:scale-[1.04] transition-all duration-200">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            {{ $smartCTA['label'] }}
+                        </a>
+                        <p class="text-blue-100 text-[11px] mt-2 font-medium opacity-80 text-center">{{ $smartCTA['subtext'] }}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         {{-- ── STATS ── --}}
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="dash-card p-5 flex items-center gap-4">
                 <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                 </div>
                 <div>
-                    <div class="text-2xl font-bold text-gray-900">{{ number_format($totalXP ?? 0) }}</div>
-                    <div class="text-xs text-gray-500 font-medium">Total XP</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ number_format($totalAssessmentsPassed ?? 0) }}</div>
+                    <div class="text-xs text-gray-500 font-medium">Asesmen Lulus</div>
                 </div>
             </div>
 
-            <div class="dash-card p-5 flex items-center justify-between col-span-1 sm:col-span-1 lg:col-span-2">
+            <div class="dash-card p-5 flex items-center justify-between sm:col-span-2">
                 <div class="w-full">
                     <div class="flex justify-between items-center mb-3">
                         <div class="flex items-center gap-2">
-                            <div class="text-lg font-bold text-gray-900">🔥 {{ $dailyStreak ?? 0 }} Hari Beruntun</div>
+                            <div class="flex items-center gap-1.5 text-lg font-bold text-gray-900">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                {{ $dailyStreak ?? 0 }} Hari Beruntun
+                            </div>
                         </div>
                         <div class="text-[10px] text-gray-400 font-medium uppercase tracking-wider hidden sm:block">Pertahankan streak kamu!</div>
                     </div>
@@ -92,10 +100,10 @@
         </div>
 
         {{-- ── MAIN CONTENT ── --}}
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            {{-- Left Column (3/5) --}}
-            <div class="lg:col-span-3 space-y-6">
+            {{-- Left Column --}}
+            <div class="space-y-6">
 
                 {{-- Learning Progress Summary Card --}}
                 <div class="dash-card p-6">
@@ -135,9 +143,15 @@
                                                 {{ $level->name }}
                                             </span>
                                             @if($completed)
-                                                <span class="text-xs font-bold text-green-600">✅ Selesai</span>
+                                                <span class="inline-flex items-center gap-1 text-xs font-bold text-green-600">
+                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                                                    Selesai
+                                                </span>
                                             @elseif(!$unlocked)
-                                                <span class="text-xs text-gray-400">🔒 Terkunci</span>
+                                                <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-400">
+                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                                    Terkunci
+                                                </span>
                                             @else
                                                 <span class="text-xs text-blue-500 font-bold">Terbuka</span>
                                             @endif
@@ -162,6 +176,45 @@
                     @endif
                 </div>
 
+                {{-- Category Performance --}}
+                <div class="dash-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-base font-bold text-gray-900">Kategori Performa</h2>
+                    </div>
+
+                    @if($categoryStats->isEmpty())
+                        <p class="text-sm text-gray-400 text-center py-4">Selesaikan kuis untuk melihat performamu.</p>
+                    @else
+                        @if($performanceInsight)
+                            <div class="mb-5 p-3 bg-blue-50/80 rounded-xl border border-blue-100">
+                                <p class="text-xs font-semibold text-blue-700 leading-relaxed">{{ $performanceInsight }}</p>
+                            </div>
+                        @endif
+
+                        <div class="space-y-4">
+                            @foreach($categoryStats as $stat)
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-base">{!! $stat['icon'] !!}</span>
+                                            <span class="text-sm font-semibold text-gray-800">{{ $stat['category'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $stat['bg'] }} {{ $stat['text_color'] }} uppercase tracking-wider">
+                                                {{ $stat['state'] }}
+                                            </span>
+                                            <span class="text-sm font-bold {{ $stat['text_color'] }}">{{ $stat['percentage'] }}%</span>
+                                        </div>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-2">
+                                        <div class="h-2 rounded-full {{ $stat['color'] }} transition-all duration-1000 ease-out"
+                                             style="width: {{ $stat['percentage'] }}%"></div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
                 {{-- Recent Activity --}}
                 <div class="dash-card p-6">
                     <div class="flex items-center justify-between mb-4">
@@ -184,7 +237,7 @@
                             @foreach($recentActivities as $a)
                                 <div class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                                     <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-sm">
-                                        {{ $a['icon'] }}
+                                        {!! $a['icon'] !!}
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <div class="text-sm font-semibold text-gray-900 truncate">{{ $a['title'] }}</div>
@@ -206,10 +259,8 @@
                 </div>
             </div>
 
-            {{-- Right Column (2/5) --}}
-            <div class="lg:col-span-2 space-y-6">
-
-
+            {{-- Right Column --}}
+            <div class="space-y-6">
 
                 {{-- Leaderboard --}}
                 <div class="dash-card p-6">
@@ -223,22 +274,43 @@
                     @else
                         <div class="space-y-2.5">
                             @foreach($topLeaderboard as $index => $user)
-                                <div class="flex items-center gap-3 p-2.5 rounded-xl {{ $user->is_me ? 'bg-blue-50' : '' }}">
-                                    <span class="w-6 text-center text-sm font-bold {{ $index === 0 ? 'text-blue-600' : 'text-gray-400' }}">
-                                        {{ $index + 1 }}
-                                    </span>
-                                    <div class="w-8 h-8 rounded-full bg-blue-{{ $index === 0 ? '600' : ($index === 1 ? '400' : '300') }} flex items-center justify-center flex-shrink-0">
-                                        <span class="text-white font-bold text-xs">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <span class="text-sm font-semibold text-gray-900 truncate block">
-                                            {{ $user->name }}
-                                            @if($user->is_me)
-                                                <span class="text-[10px] font-bold text-blue-600 ml-1">ANDA</span>
-                                            @endif
+                                <div class="flex flex-col p-3 rounded-xl border border-gray-100 {{ $user->is_me ? 'bg-blue-50' : 'bg-white' }}">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <span class="text-base font-bold {{ $index === 0 ? 'text-yellow-500' : ($index === 1 ? 'text-gray-400' : 'text-amber-700') }}">
+                                            #{{ $index + 1 }}
                                         </span>
+                                        <div class="flex-1 min-w-0">
+                                            <span class="text-sm font-bold text-gray-900 truncate flex items-center gap-2">
+                                                {{ $user->name }}
+                                                @if($user->is_me)
+                                                    <span class="text-[10px] font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">ANDA</span>
+                                                @endif
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span class="text-xs font-bold text-gray-500">{{ number_format($user->total_correct) }} pts</span>
+                                    <div class="space-y-1.5 text-xs text-gray-700 font-medium">
+                                        <div class="flex items-center justify-between bg-gray-50 px-2 py-1.5 rounded">
+                                            <span class="flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                Rata-rata Posttest:
+                                            </span>
+                                            <span class="font-bold text-gray-900">{{ $user->avg_posttest_score !== null ? $user->avg_posttest_score . '%' : '-' }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between bg-gray-50 px-2 py-1.5 rounded">
+                                            <span class="flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                                Level Selesai:
+                                            </span>
+                                            <span class="font-bold text-gray-900">{{ $user->completed_levels }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between bg-gray-50 px-2 py-1.5 rounded">
+                                            <span class="flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                                Hari Beruntun:
+                                            </span>
+                                            <span class="font-bold text-gray-900">{{ $user->streak }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -253,7 +325,6 @@
                         </div>
                     @endif
                 </div>
-
 
             </div>
         </div>

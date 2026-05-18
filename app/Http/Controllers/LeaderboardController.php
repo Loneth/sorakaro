@@ -21,25 +21,17 @@ class LeaderboardController extends Controller
         $dateFilter = $range === 'weekly' ? now()->subDays(7) : null;
 
         // Query Builder with Aggregation Joins
-        // Structure: attempt_answers -> attempts -> users
-        // We aggregate by user to get stats.
+        // Structure: attempts -> users -> lessons (filtered by posttest)
         
-        $query = DB::table('attempt_answers')
-            ->join('attempts', 'attempt_answers.attempt_id', '=', 'attempts.id')
+        $query = DB::table('attempts')
             ->join('users', 'attempts.user_id', '=', 'users.id')
+            ->join('lessons', 'attempts.lesson_id', '=', 'lessons.id')
+            ->where('lessons.assessment_type', 'posttest')
             ->select([
                 'users.id',
                 'users.name',
-                // Primary Metric: Total Correct Answers
-                DB::raw('SUM(attempt_answers.is_correct) as total_correct'),
-                // Total Answers (for reference, requested by prompt)
-                DB::raw('COUNT(attempt_answers.id) as total_answers'),
-                // Total Attempts (Count distinct attempts)
-                DB::raw('COUNT(DISTINCT attempts.id) as total_attempts'),
-                // Passed Attempts (for pass rate calculation)
-                DB::raw('COUNT(DISTINCT CASE WHEN attempts.passed = 1 THEN attempts.id END) as passed_attempts'),
-                // Avg Score (Direct AVG requested, assuming uniform question counts or accepting weighted avg)
-                DB::raw('AVG(attempts.score) as avg_score')
+                DB::raw('AVG(attempts.score) as avg_posttest_score'),
+                DB::raw('COUNT(DISTINCT CASE WHEN attempts.passed = 1 THEN lessons.level_id END) as completed_levels')
             ]);
 
         // Apply Date Filter
@@ -47,27 +39,57 @@ class LeaderboardController extends Controller
             $query->where('attempts.created_at', '>=', $dateFilter);
         }
 
-        // Apply Group By and Ordering
-        // Order: total_correct desc, pass_rate desc, avg_score desc, total_attempts desc
+        // Apply Group By and limit
         $leaderboard = $query->groupBy('users.id', 'users.name')
-            ->having('total_correct', '>', 0) // Ensure users with no correct answers/attempts don't clutter (or just > 0 attempts?) 
-            // Prompt says: "Handle users with no attempts: they should not appear." 
-            // The Inner Join on attempts/answers naturally excludes users with no attempts/answers.
-            ->orderByDesc('total_correct')
-            ->orderByRaw('(COUNT(DISTINCT CASE WHEN attempts.passed = 1 THEN attempts.id END) / COUNT(DISTINCT attempts.id)) DESC') // Pass Rate
-            ->orderByDesc('avg_score')
-            ->orderByDesc('total_attempts')
             ->limit($limit)
             ->get();
 
-        // Process collection for display (calculate percentages)
-        $leaderboard->transform(function ($item) {
-            $item->pass_rate = $item->total_attempts > 0 
-                ? round(($item->passed_attempts / $item->total_attempts) * 100, 1) 
-                : 0;
-            $item->avg_score = round($item->avg_score, 1);
+        // Eager load attempt dates to prevent N+1 query when calculating streaks
+        $userIds = $leaderboard->pluck('id');
+        $allAttemptDates = DB::table('attempts')
+            ->whereIn('user_id', $userIds)
+            ->select('user_id', DB::raw('DATE(created_at) as attempt_date'))
+            ->groupBy('user_id', 'attempt_date')
+            ->orderByDesc('attempt_date')
+            ->get()
+            ->groupBy('user_id');
+
+        // Calculate streak and format data
+        $leaderboard->transform(function ($item) use ($allAttemptDates) {
+            $item->avg_posttest_score = $item->avg_posttest_score !== null ? round($item->avg_posttest_score) : null;
+            
+            // Calculate streak for this user
+            $attemptDates = collect();
+            if ($allAttemptDates->has($item->id)) {
+                $attemptDates = $allAttemptDates[$item->id]->pluck('attempt_date')->map(fn($d) => \Carbon\Carbon::parse($d));
+            }
+
+            $streak = 0;
+            if ($attemptDates->isNotEmpty()) {
+                $streak = 1;
+                $today = now()->startOfDay();
+                $firstDate = $attemptDates->first();
+                if ($firstDate->gte($today->copy()->subDay())) {
+                    for ($i = 0; $i < $attemptDates->count() - 1; $i++) {
+                        if ($attemptDates[$i]->diffInDays($attemptDates[$i + 1]) === 1) {
+                            $streak++;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            $item->streak = $streak;
+
             return $item;
         });
+
+        // Sort by primary: completed levels, secondary: avg score, tertiary: streak
+        $leaderboard = $leaderboard->sortBy([
+            ['completed_levels', 'desc'],
+            ['avg_posttest_score', 'desc'],
+            ['streak', 'desc'],
+        ])->values();
 
         return view('leaderboard.index', [
             'leaderboard' => $leaderboard,

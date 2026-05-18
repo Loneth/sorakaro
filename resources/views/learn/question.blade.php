@@ -49,7 +49,7 @@
 
                             <label class="{{ $classes }}">
                                 <input type="radio" name="choice_id" value="{{ $choice->id }}" 
-                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     {{ $isAnswered ? 'disabled' : '' }}
                                     {{ $isSelected ? 'checked' : '' }}
                                 >

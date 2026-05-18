@@ -10,12 +10,12 @@
     $baseClasses = 'inline-flex items-center border border-transparent rounded-md font-semibold uppercase tracking-widest focus:outline-none transition ease-in-out duration-150';
     
     $variantClasses = match($variant) {
-        'primary' => 'bg-gray-800 text-white hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
-        'secondary' => 'bg-indigo-600 text-white hover:bg-indigo-500 focus:bg-indigo-700 active:bg-indigo-900 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
-        'ghost' => 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
-        'outline' => 'bg-white text-green-600 border-green-600 hover:bg-green-50 focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
+        'primary' => 'bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+        'secondary' => 'bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+        'ghost' => 'bg-white text-blue-700 border-gray-300 hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+        'outline' => 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
         'disabled' => 'bg-gray-300 text-gray-500 cursor-not-allowed',
-        default => 'bg-gray-800 text-white hover:bg-gray-700',
+        default => 'bg-blue-600 text-white hover:bg-blue-700',
     };
     
     $sizeClasses = match($size) {

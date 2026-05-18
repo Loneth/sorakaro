@@ -13,9 +13,8 @@
                 </svg>
             </button>
 
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo Sorakaro" class="h-12 w-auto object-contain">
-                <span class="font-bold text-gray-900">Sorakaro</span>
+            <a href="{{ route('dashboard') }}" class="flex items-center">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Sorakaro" class="h-10 md:h-12 w-auto object-contain">
             </a>
 
             <button type="button"
@@ -57,9 +56,8 @@
             <div class="h-full flex flex-col">
                 {{-- Brand --}}
                 <div class="px-5 py-6">
-                    <a href="{{ route('dashboard') }}" class="hidden sm:flex items-center gap-3">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo Sorakaro" class="h-16 w-auto object-contain">
-                        <span class="font-bold text-white text-lg tracking-tight">Sorakaro</span>
+                    <a href="{{ route('dashboard') }}" class="hidden sm:flex items-center justify-center">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Sorakaro" class="h-20 w-auto object-contain">
                     </a>
                 </div>
 
@@ -132,7 +130,7 @@
                 </header>
             @endisset
 
-            <main class="max-w-6xl mx-auto px-6 lg:px-8 py-8">
+            <main class="max-w-6xl mx-auto px-6 lg:px-8 py-8 animate-fade-in">
                 {{ $slot }}
             </main>
         </div>

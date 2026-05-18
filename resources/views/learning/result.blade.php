@@ -14,14 +14,10 @@
 
         @php
             $pretest = $session->pretestAttempt;
-            $preScore = ($pretest && $pretest->total_questions > 0)
-                ? (int) round(($pretest->score / $pretest->total_questions) * 100)
-                : 0;
+            $preScore = $pretest ? (int) $pretest->score : 0;
                 
             $posttest = $session->posttestAttempt;
-            $postScore = ($posttest && $posttest->total_questions > 0)
-                ? (int) round(($posttest->score / $posttest->total_questions) * 100)
-                : 0;
+            $postScore = $posttest ? (int) $posttest->score : 0;
                 
             $isPassed = $posttest && $posttest->passed;
             $passRate = $posttest && $posttest->lesson ? $posttest->lesson->pass_rate : 70;
@@ -90,6 +86,22 @@
                         {{ $level }}
                     </span>
                 </div>
+
+                @if($postScore > $preScore)
+                    <div class="mt-6 bg-green-50 border border-green-100 rounded-xl p-4 text-center">
+                        <div class="text-lg font-bold text-green-700 flex items-center justify-center gap-2 mb-1">
+                            <span>🎉</span> Peningkatan Sangat Baik
+                        </div>
+                        <p class="text-sm text-green-600 font-medium">Kamu berhasil memahami materi dengan jauh lebih baik!</p>
+                    </div>
+                @elseif($postScore === $preScore && $postScore >= 70)
+                    <div class="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
+                        <div class="text-lg font-bold text-blue-700 flex items-center justify-center gap-2 mb-1">
+                            <span>⭐</span> Konsisten Sekali
+                        </div>
+                        <p class="text-sm text-blue-600 font-medium">Kamu berhasil mempertahankan pemahaman materi dengan sangat baik!</p>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -124,7 +136,7 @@
         <div class="flex flex-col sm:flex-row gap-3">
             @if($isPassed)
                 <a href="{{ route('dashboard') }}"
-                   class="flex-1 inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700
+                   class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700
                           text-white font-semibold px-6 py-3 rounded-xl shadow transition active:scale-95">
                     Lanjut ke Level Berikutnya
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,8 +145,8 @@
                 </a>
             @else
                 <a href="{{ route('learning.start') }}"
-                   class="flex-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50
-                          border border-gray-200 text-gray-700 font-semibold px-6 py-3 rounded-xl shadow-sm transition">
+                   class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100
+                          border border-blue-200 text-blue-700 font-semibold px-6 py-3 rounded-xl shadow-sm transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>

@@ -7,11 +7,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-wrap items-center justify-between py-3">
             {{-- Brand --}}
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
+            <a href="{{ route('dashboard') }}" class="flex items-center">
                 <x-application-logo class="h-16 w-auto object-contain" />
-                <span class="self-center text-base font-semibold whitespace-nowrap text-gray-900">
-                    Sorakaro
-                </span>
             </a>
 
             {{-- Right controls --}}

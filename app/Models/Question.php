@@ -11,6 +11,7 @@ class Question extends Model
     protected $fillable = [
         'lesson_id',
         'type',
+        'skill_category',   // Performance category (e.g. Grammar, Vocabulary)
         'image_path',       // Storage path for visual layer
         'prompt',
         'explanation',
@@ -34,6 +35,19 @@ class Question extends Model
     public const TYPE_MCQ     = 'mcq';
     public const TYPE_WRITING = 'writing';
     public const TYPE_TYPING  = 'typing'; // legacy
+
+    /**
+     * Performance skill categories
+     */
+    public const SKILL_CATEGORIES = [
+        'greetings'    => 'Kata Sapaan',
+        'conversation' => 'Percakapan',
+        'grammar'      => 'Tata Bahasa',
+        'numbers'      => 'Angka',
+        'listening'    => 'Listening',
+        'writing'      => 'Writing',
+        'vocabulary'   => 'Vocabulary',
+    ];
 
     public function lesson(): BelongsTo
     {

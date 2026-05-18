@@ -18,9 +18,9 @@
             <x-ui.card>
                 @php
                     $total = max(1, (int) $attempt->total_questions);
-                    $score = (int) $attempt->score;
+                    $percentage = (int) $attempt->score;
+                    $correctAnswersCount = (int) round(($percentage / 100) * $total);
 
-                    $percentage = (int) round(($score / $total) * 100);
                     $passed = (bool) $attempt->passed;
                     $passRate = (int) ($lesson->pass_rate ?? 70);
                 @endphp
@@ -54,7 +54,7 @@
                         <div class="text-5xl font-bold {{ $passed ? 'text-green-600' : 'text-red-600' }} mb-2">
                             {{ $percentage }}%
                             <span class="text-xl text-gray-400 block mt-1 font-normal text-sm">
-                                ({{ $attempt->score }}/{{ $attempt->total_questions }} Benar)
+                                ({{ $correctAnswersCount }}/{{ $attempt->total_questions }} Benar)
                             </span>
                         </div>
                         <div class="text-sm font-medium {{ $passed ? 'text-green-700' : 'text-red-700' }} mt-2">
@@ -72,12 +72,12 @@
 
                     <div class="bg-gray-50 rounded-lg p-4 border">
                         <div class="text-xs text-gray-500">Benar</div>
-                        <div class="text-lg font-semibold text-green-700">{{ $score }}</div>
+                        <div class="text-lg font-semibold text-green-700">{{ $correctAnswersCount }}</div>
                     </div>
 
                     <div class="bg-gray-50 rounded-lg p-4 border">
                         <div class="text-xs text-gray-500">Salah</div>
-                        <div class="text-lg font-semibold text-red-700">{{ $total - $score }}</div>
+                        <div class="text-lg font-semibold text-red-700">{{ $total - $correctAnswersCount }}</div>
                     </div>
                 </div>
 

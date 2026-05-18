@@ -35,10 +35,9 @@
                         <tr>
                             <th class="px-6 py-3 w-16 text-center">Peringkat</th>
                             <th class="px-6 py-3">Pengguna</th>
-                            <th class="px-6 py-3 text-right">Poin</th>
-                            <th class="px-6 py-3 text-center">Percobaan</th>
-                            <th class="px-6 py-3 text-center">Tingkat Lulus</th>
-                            <th class="px-6 py-3 text-center">Rata-rata Skor</th>
+                            <th class="px-6 py-3 text-center">Rata-rata Posttest</th>
+                            <th class="px-6 py-3 text-center">Level Selesai</th>
+                            <th class="px-6 py-3 text-center">Hari Beruntun</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,22 +68,19 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-right font-bold text-gray-900">
-                                    {{ number_format($user->total_correct) }}
+                                <td class="px-6 py-4 text-center font-bold text-gray-900">
+                                    {{ $user->avg_posttest_score !== null ? $user->avg_posttest_score . '%' : '-' }}
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    {{ $user->total_attempts }}
+                                    {{ $user->completed_levels }}
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    {{ $user->pass_rate }}%
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    {{ $user->avg_score }}%
+                                <td class="px-6 py-4 text-center text-gray-500">
+                                    {{ $user->streak }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
                                     Tidak ada catatan yang ditemukan untuk periode ini.
                                 </td>
                             </tr>

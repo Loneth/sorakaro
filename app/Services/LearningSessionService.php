@@ -79,10 +79,14 @@ class LearningSessionService
             // Validate and save answers
             $this->validateAndSaveAnswers($attempt, $answers);
 
-            // Calculate score
-            $score = AttemptAnswer::where('attempt_id', $attempt->id)
+            // Calculate score as percentage
+            $correctCount = AttemptAnswer::where('attempt_id', $attempt->id)
                 ->where('is_correct', true)
                 ->count();
+                
+            $score = $attempt->total_questions > 0 
+                ? (int) round(($correctCount / $attempt->total_questions) * 100) 
+                : 0;
                 
             $attempt->update([
                 'score'       => $score,
@@ -116,34 +120,30 @@ class LearningSessionService
             // Validate and save answers
             $this->validateAndSaveAnswers($attempt, $answers);
 
-            // Calculate score
-            $score = AttemptAnswer::where('attempt_id', $attempt->id)
+            // Calculate score as percentage
+            $correctCount = AttemptAnswer::where('attempt_id', $attempt->id)
                 ->where('is_correct', true)
                 ->count();
                 
             $posttestScore = $attempt->total_questions > 0 
-                ? (int) round(($score / $attempt->total_questions) * 100) 
+                ? (int) round(($correctCount / $attempt->total_questions) * 100) 
                 : 0;
 
             $passRate = $attempt->lesson->pass_rate ?? 70;
             $isPassed = $posttestScore >= $passRate;
 
             $attempt->update([
-                'score'       => $score,
+                'score'       => $posttestScore,
                 'passed'      => $isPassed,
                 'finished_at' => now(),
             ]);
 
             // Calculate pretest percentage for improvement comparison safely
             $pretest = $session->pretestAttempt;
-            $pretestScore = ($pretest && $pretest->total_questions > 0)
-                ? (int) round(($pretest->score / $pretest->total_questions) * 100)
-                : 0;
+            $pretestScore = $pretest ? $pretest->score : 0;
 
-            // Safe division formula
-            $improvement = ($pretestScore > 0)
-                ? (int) round((($posttestScore - $pretestScore) / $pretestScore) * 100)
-                : $posttestScore;
+            // Raw percentage difference instead of division
+            $improvement = $posttestScore - $pretestScore;
 
             $session->update([
                 'status'      => 'completed',

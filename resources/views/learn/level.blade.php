@@ -33,7 +33,7 @@
                         <div class="flex items-center justify-between border rounded p-4 bg-gray-50 hover:bg-gray-100 transition">
                             <div class="flex items-center gap-4">
                                 {{-- Icon/Number --}}
-                                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-gray-800 font-bold text-lg">
+                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-bold text-lg">
                                     {{ $loop->iteration }}
                                 </div>
                                 <div>
@@ -73,7 +73,7 @@
                             <div class="flex flex-col items-end gap-2">
                                 {{-- Continue Button --}}
                                 @if($lesson->status === 'in_progress' && $lesson->latest_attempt)
-                                     <a href="{{ route('learn.resume', $lesson->latest_attempt->id) }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-900 underline">
+                                     <a href="{{ route('learn.resume', $lesson->latest_attempt->id) }}" class="text-xs font-bold text-blue-600 hover:text-blue-800 underline">
                                          Lanjut
                                      </a>
                                 @endif

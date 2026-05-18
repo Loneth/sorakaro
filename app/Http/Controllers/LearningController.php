@@ -244,6 +244,7 @@ class LearningController extends Controller
     {
         return LearningSession::where('user_id', $request->user()->id)
             ->whereNotIn('status', ['completed'])
+            ->whereNotNull('level_id')
             ->latest()
             ->first();
     }
