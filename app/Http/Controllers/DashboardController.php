@@ -250,77 +250,6 @@ class DashboardController extends Controller
             ->latest()
             ->first();
 
-        // 11. Category Performance
-        $categoryStats = DB::table('attempt_answers')
-            ->join('attempts', 'attempts.id', '=', 'attempt_answers.attempt_id')
-            ->join('questions', 'questions.id', '=', 'attempt_answers.question_id')
-            ->where('attempts.user_id', $userId)
-            ->whereNotNull('questions.skill_category')
-            ->select(
-                'questions.skill_category',
-                DB::raw('SUM(attempt_answers.is_correct) as total_correct'),
-                DB::raw('COUNT(attempt_answers.id) as total_answered')
-            )
-            ->groupBy('questions.skill_category')
-            ->get()
-            ->map(function ($stat) {
-                $percentage = $stat->total_answered > 0 ? (int) round(($stat->total_correct / $stat->total_answered) * 100) : 0;
-                
-                // Visual states mapping
-                if ($percentage < 40) {
-                    $state = 'weak';
-                    $color = 'bg-red-500';
-                    $bg = 'bg-red-50';
-                    $textColor = 'text-red-600';
-                } elseif ($percentage < 70) {
-                    $state = 'improving';
-                    $color = 'bg-yellow-400';
-                    $bg = 'bg-yellow-50';
-                    $textColor = 'text-yellow-600';
-                } else {
-                    $state = 'mastered';
-                    $color = 'bg-green-500';
-                    $bg = 'bg-green-50';
-                    $textColor = 'text-green-600';
-                }
-
-                $catIcons = [
-                    'greetings'    => '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
-                    'conversation' => '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>',
-                    'grammar'      => '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>',
-                    'numbers'      => '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" /></svg>',
-                    'listening'    => '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>',
-                    'writing'      => '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>',
-                    'vocabulary'   => '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>',
-                ];
-                $displayIcon = $catIcons[$stat->skill_category] ?? '<svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>';
-                $displayLabel = \App\Models\Question::SKILL_CATEGORIES[$stat->skill_category] ?? $stat->skill_category;
-
-                return [
-                    'category' => $displayLabel,
-                    'percentage' => $percentage,
-                    'state' => $state,
-                    'color' => $color,
-                    'bg' => $bg,
-                    'text_color' => $textColor,
-                    'icon' => $displayIcon,
-                ];
-            })
-            ->sortByDesc('percentage')
-            ->values();
-
-        $performanceInsight = null;
-        if ($categoryStats->count() > 0) {
-            $weakest = $categoryStats->last();
-            $best = $categoryStats->first();
-            
-            if ($weakest['percentage'] < 40) {
-                $performanceInsight = "Kamu masih lemah di {$weakest['category']} {$weakest['icon']} Yuk tingkatkan lagi!";
-            } elseif ($best['percentage'] >= 70) {
-                $performanceInsight = "Kategori terbaikmu: {$best['category']} 🎉 Terus pertahankan!";
-            }
-        }
-
         // 12. Smart CTA
         $smartCTA = $this->resolveDashboardCTA($user, $activeSession, $levelsCompleted, $totalLevels);
 
@@ -380,8 +309,6 @@ class DashboardController extends Controller
             'nextLesson',
             'activeSession',
             'smartCTA',
-            'categoryStats',
-            'performanceInsight',
             'levelCards'
         ));
     }

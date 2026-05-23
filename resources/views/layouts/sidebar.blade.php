@@ -82,7 +82,7 @@
                         </svg>
                         <div class="flex flex-col items-start leading-tight">
                             <span class="font-medium">Mulai Belajar</span>
-                            <span class="text-[10px] italic opacity-70">ermulih belajar</span>
+                            <span class="text-[10px] italic opacity-70">mulaierlajar</span>
                         </div>
                     </a>
 
@@ -106,7 +106,7 @@
                         </svg>
                         <div class="flex flex-col items-start leading-tight">
                             <span class="font-medium">Progres Saya</span>
-                            <span class="text-[10px] italic opacity-70">perkembanganku</span>
+                            <span class="text-[10px] italic opacity-70">kemajunku</span>
                         </div>
                     </a>
 
@@ -143,7 +143,7 @@
                             </svg>
                             <div class="flex flex-col items-start leading-tight">
                                 <span class="font-medium">Keluar</span>
-                                <span class="text-[10px] italic opacity-70">nusur</span>
+                                <span class="text-[10px] italic opacity-70">ndarat</span>
                             </div>
                         </button>
                     </form>

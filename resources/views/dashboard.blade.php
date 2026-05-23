@@ -100,7 +100,7 @@
         </div>
 
         {{-- ── QUICK ACTIONS ── --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4">
             <a href="{{ route('dictionary.index') }}"
                class="dash-card p-5 flex items-center gap-4 hover:border-blue-200 hover:shadow-md transition group">
                 <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-100 transition">
@@ -202,45 +202,6 @@
                     @endif
                 </div>
 
-                {{-- Category Performance --}}
-                <div class="dash-card p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-bold text-gray-900">Kategori Performa</h2>
-                    </div>
-
-                    @if($categoryStats->isEmpty())
-                        <p class="text-sm text-gray-400 text-center py-4">Selesaikan kuis untuk melihat performamu.</p>
-                    @else
-                        @if($performanceInsight)
-                            <div class="mb-5 p-3 bg-blue-50/80 rounded-xl border border-blue-100">
-                                <p class="text-xs font-semibold text-blue-700 leading-relaxed">{{ $performanceInsight }}</p>
-                            </div>
-                        @endif
-
-                        <div class="space-y-4">
-                            @foreach($categoryStats as $stat)
-                                <div>
-                                    <div class="flex items-center justify-between mb-2">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-base">{!! $stat['icon'] !!}</span>
-                                            <span class="text-sm font-semibold text-gray-800">{{ $stat['category'] }}</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $stat['bg'] }} {{ $stat['text_color'] }} uppercase tracking-wider">
-                                                {{ $stat['state'] }}
-                                            </span>
-                                            <span class="text-sm font-bold {{ $stat['text_color'] }}">{{ $stat['percentage'] }}%</span>
-                                        </div>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-2">
-                                        <div class="h-2 rounded-full {{ $stat['color'] }} transition-all duration-1000 ease-out"
-                                             style="width: {{ $stat['percentage'] }}%"></div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
                 {{-- Recent Activity --}}
                 <div class="dash-card p-6">
                     <div class="flex items-center justify-between mb-4">

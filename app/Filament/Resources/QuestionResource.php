@@ -55,13 +55,6 @@ class QuestionResource extends Resource
                 ->live()
                 ->helperText('MCQ = user picks an answer. Writing = user types their answer.'),
 
-            Select::make('skill_category')
-                ->label('Skill Category')
-                ->options(Question::SKILL_CATEGORIES)
-                ->placeholder('Pilih kategori skill')
-                ->nullable()
-                ->helperText('Pilih kategori skill untuk melacak performa belajar per kategori.'),
-
             Textarea::make('prompt')
                 ->label('Question / Prompt')
                 ->required()
@@ -165,15 +158,6 @@ class QuestionResource extends Resource
                         'typing'  => '⌨️ Typing',
                         default   => $state,
                     }),
-
-                TextColumn::make('skill_category')
-                    ->label('Category')
-                    ->sortable()
-                    ->searchable()
-                    ->badge()
-                    ->color('secondary')
-                    ->formatStateUsing(fn (string $state): string => Question::SKILL_CATEGORIES[$state] ?? $state)
-                    ->placeholder('-'),
 
                 IconColumn::make('audio_path')
                     ->label('🎧 Audio')

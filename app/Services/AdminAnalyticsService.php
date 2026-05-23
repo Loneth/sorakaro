@@ -106,32 +106,6 @@ class AdminAnalyticsService
         })->toArray();
     }
 
-    public function getCategoryPerformance(): array
-    {
-        // Accuracy per skill_category
-        $stats = DB::table('attempt_answers')
-            ->join('questions', 'attempt_answers.question_id', '=', 'questions.id')
-            ->select(
-                'questions.skill_category',
-                DB::raw('COUNT(attempt_answers.id) as total_answers'),
-                DB::raw('SUM(CASE WHEN attempt_answers.is_correct = 1 THEN 1 ELSE 0 END) as correct_answers')
-            )
-            ->whereNotNull('questions.skill_category')
-            ->groupBy('questions.skill_category')
-            ->get();
-
-        return $stats->map(function ($stat) {
-            $accuracy = $stat->total_answers > 0
-                ? round(($stat->correct_answers / $stat->total_answers) * 100, 1)
-                : 0;
-
-            return [
-                'category' => Question::SKILL_CATEGORIES[$stat->skill_category] ?? ucfirst($stat->skill_category),
-                'accuracy' => $accuracy,
-                'total_answers' => $stat->total_answers,
-            ];
-        })->sortByDesc('accuracy')->values()->toArray();
-    }
 
     public function getMostFailedQuestions(int $limit = 10): array
     {
