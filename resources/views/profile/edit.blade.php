@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <x-ui.breadcrumb :items="[
-            ['label' => 'Profile']
+            ['label' => 'Profil']
         ]" />
     </x-slot>
 
@@ -27,7 +27,7 @@
         </div>
     </div>
     <x-success-modal :trigger-messages="[
-        'profile-updated' => __('Your profile information has been updated.'),
-        'password-updated' => __('Your password has been updated.'),
+        'profile-updated' => 'Informasi profil kamu berhasil diperbarui.',
+        'password-updated' => 'Kata sandi kamu berhasil diperbarui.',
     ]" />
 </x-app-layout>

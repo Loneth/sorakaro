@@ -22,8 +22,8 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="text-blue-200 text-xs font-bold tracking-wider uppercase mb-1">Step 3: Test your progress</div>
-                    <h1 class="text-xl font-bold">Post-test</h1>
+                    <div class="text-blue-200 text-xs font-bold tracking-wider uppercase mb-1">Langkah 3 dari 4</div>
+                    <h1 class="text-xl font-bold">Tes Pemahaman Akhir</h1>
                     <p class="text-blue-100 text-sm">Uji pemahaman kamu setelah membaca panduan 💪</p>
                 </div>
             </div>
