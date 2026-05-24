@@ -55,9 +55,9 @@
 
                                         {{-- Last Score --}}
                                         @if($lesson->latest_attempt)
-                                             <span class="text-xs text-gray-600 border-l pl-2 border-gray-300">
-                                                Terakhir: {{ $lesson->latest_attempt->score }}/{{ $lesson->latest_attempt->total_questions }}
-                                             </span>
+                                            <span class="text-xs text-gray-600 border-l pl-2 border-gray-300">
+                                                Terakhir: {{ $lesson->latest_attempt->score }}%
+                                            </span>
                                         @endif
 
                                         {{-- Attempts Count --}}

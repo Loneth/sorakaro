@@ -14,10 +14,10 @@
 
         @php
             $pretest = $session->pretestAttempt;
-            $preScore = $pretest ? (int) $pretest->score : 0;
+            $preScore = $pretest ? min(max((int) $pretest->score, 0), 100) : 0;
                 
             $posttest = $session->posttestAttempt;
-            $postScore = $posttest ? (int) $posttest->score : 0;
+            $postScore = $posttest ? min(max((int) $posttest->score, 0), 100) : 0;
                 
             $isPassed = $posttest && $posttest->passed;
             $passRate = $posttest && $posttest->lesson ? $posttest->lesson->pass_rate : 70;
@@ -141,37 +141,16 @@
 
         {{-- CTAs --}}
         <div class="flex flex-col sm:flex-row gap-3">
-            @if($isPassed)
-                <a href="{{ route('dashboard') }}"
-                   class="flex-1 inline-flex flex-col items-center justify-center bg-blue-600 hover:bg-blue-700
-                          text-white px-6 py-3 rounded-xl shadow transition active:scale-95 leading-tight">
-                    <div class="flex items-center gap-2 font-semibold">
-                        Lanjut ke Level Berikutnya
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                        </svg>
-                    </div>
-                    <span class="text-[11px] italic opacity-70 font-normal mt-0.5">tambahi</span>
-                </a>
-            @else
-                <a href="{{ route('learning.start') }}"
-                   class="flex-1 inline-flex flex-col items-center justify-center bg-blue-50 hover:bg-blue-100
-                          border border-blue-200 text-blue-700 px-6 py-3 rounded-xl shadow-sm transition leading-tight">
-                    <div class="flex items-center gap-2 font-semibold">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        Ulangi Belajar
-                    </div>
-                </a>
-
-                <a href="{{ route('dashboard') }}"
-                   class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700
-                          text-white font-semibold px-6 py-3 rounded-xl shadow transition active:scale-95">
-                    Kembali ke Dasbor
-                </a>
-            @endif
+            <a href="{{ route('learn.index') }}"
+               class="flex-1 inline-flex flex-col items-center justify-center bg-blue-600 hover:bg-blue-700
+                      text-white px-6 py-3 rounded-xl shadow transition active:scale-95 leading-tight">
+                <div class="flex items-center gap-2 font-semibold">
+                    Kembali ke Menu Level
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </div>
+            </a>
         </div>
 
 

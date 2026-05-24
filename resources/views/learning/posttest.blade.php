@@ -30,17 +30,15 @@
             @if($session->pretestAttempt)
                 @php
                     $pretest = $session->pretestAttempt;
-                    $preScore = $pretest->total_questions > 0 
-                        ? (int) round(($pretest->score / $pretest->total_questions) * 100) 
-                        : 0;
+                    $preScore = $pretest ? min(max((int) $pretest->score, 0), 100) : 0;
                 @endphp
                 <div class="mt-3 flex items-center gap-2 bg-white/10 rounded-lg px-4 py-2 text-sm">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                     </svg>
-                    Skor pre-test kamu: <strong>{{ $preScore }}%</strong>
-                    &nbsp;· Sekarang buktikan peningkatanmu!
+                    <span>Skor pre-test kamu: <strong class="text-white bg-blue-800/50 px-1.5 py-0.5 rounded">{{ $preScore }}%</strong></span>
+                    <span class="opacity-75">· Sekarang buktikan peningkatanmu!</span>
                 </div>
             @endif
         </div>
@@ -74,7 +72,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
                     </div>
-                    <span class="text-[11px] italic opacity-70 font-normal mt-0.5">enggo</span>
                 </button>
             </div>
         </form>

@@ -273,14 +273,14 @@ class LearnController extends Controller
         );
 
         // Recalculate score (correct count)
-        $score = AttemptAnswer::where('attempt_id', $attempt->id)
+        $correctCount = AttemptAnswer::where('attempt_id', $attempt->id)
             ->where('is_correct', true)
             ->count();
 
-        $attempt->update(['score' => $score]);
-
         $total = max(1, (int) $attempt->total_questions);
-        $percentage = (int) round(($score / $total) * 100);
+        $percentage = min(max((int) round(($correctCount / $total) * 100), 0), 100);
+
+        $attempt->update(['score' => $percentage]);
 
         // default pass rate kalau null
         $passRate = (int) ($lesson->pass_rate ?? 70);

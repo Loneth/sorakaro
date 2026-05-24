@@ -81,7 +81,7 @@ class LearningSessionService
                 ->count();
                 
             $score = $attempt->total_questions > 0 
-                ? (int) round(($correctCount / $attempt->total_questions) * 100) 
+                ? min(max((int) round(($correctCount / $attempt->total_questions) * 100), 0), 100)
                 : 0;
                 
             $attempt->update([
@@ -122,7 +122,7 @@ class LearningSessionService
                 ->count();
                 
             $posttestScore = $attempt->total_questions > 0 
-                ? (int) round(($correctCount / $attempt->total_questions) * 100) 
+                ? min(max((int) round(($correctCount / $attempt->total_questions) * 100), 0), 100)
                 : 0;
 
             $passRate = $attempt->lesson->pass_rate ?? 70;

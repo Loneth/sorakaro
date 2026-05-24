@@ -21,7 +21,7 @@
 
         <div class="text-sm font-medium text-gray-600 flex items-center gap-4 flex-wrap justify-end">
             @if(!is_null($score))
-                <span>Skor: {{ $score }} / {{ $total }}</span>
+                <span>Skor: {{ $score }}%</span>
             @endif
 
             @if(!is_null($answered))
