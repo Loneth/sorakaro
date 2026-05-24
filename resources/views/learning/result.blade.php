@@ -46,9 +46,9 @@
                 </h1>
                 <div class="mb-3">
                     @if($isPassed)
-                        <span class="text-lg italic text-green-100 opacity-90">Mejuah-juah!</span>
+                        <span class="text-lg italic text-green-100 opacity-90">Selamat, enggo berhasil kamndungi tingkat enda</span>
                     @else
-                        <span class="text-lg italic text-blue-100 opacity-90">ulangi nari</span>
+                        <span class="text-lg italic text-blue-100 opacity-90">Langa berhasil sekali enda</span>
                     @endif
                 </div>
                 <p class="{{ $isPassed ? 'text-green-50' : 'text-blue-50' }} text-sm md:text-base max-w-sm mx-auto">
@@ -164,7 +164,6 @@
                         </svg>
                         Ulangi Belajar
                     </div>
-                    <span class="text-[11px] italic opacity-70 font-normal mt-0.5">ulangi nari</span>
                 </a>
 
                 <a href="{{ route('dashboard') }}"
