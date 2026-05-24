@@ -100,7 +100,7 @@ class QuestionResource extends Resource
                 ->schema([
                     FileUpload::make('audio_path')
                         ->label('Audio File')
-                        ->disk('public')
+                        ->disk('dae')
                         ->directory('question-audio')
                         ->visibility('public')
                         ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'audio/ogg'])
@@ -117,7 +117,7 @@ class QuestionResource extends Resource
                     FileUpload::make('image_path')
                         ->label('Image File')
                         ->image()
-                        ->disk('public')
+                        ->disk('dae')
                         ->directory('question-images')
                         ->visibility('public')
                         ->imageEditor()
